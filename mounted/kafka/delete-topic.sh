@@ -1,0 +1,1 @@
+/usr/local/kafka/bin/kafka-topics.sh --delete --zookeeper zookeeper:2181 --topic $1

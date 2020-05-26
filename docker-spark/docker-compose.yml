@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+    sparkmst:
+        image: streamingenv-spark:1.0
+        hostname: sparkmst
+        ports:
+            - "8080:8080"
+            - "7077:7077"
+            - "8081:8081"
+            - "9122:22"
+            - "4040:4040"
+        volumes:
+            - c:/Data/ThesisProject/mounted:/data
+        networks:
+            - docker-kafka_kfk-net
+networks:
+    docker-kafka_kfk-net:
+        external: true
