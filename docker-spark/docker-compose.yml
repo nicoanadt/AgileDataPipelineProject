@@ -2,7 +2,7 @@ version: '2'
 
 services:
     sparkmst:
-        image: streamingenv-spark:1.0
+        image: streamingenv-spark:1.2
         hostname: sparkmst
         ports:
             - "8080:8080"
@@ -11,7 +11,7 @@ services:
             - "9122:22"
             - "4040:4040"
         volumes:
-            - c:/Data/ThesisProject/mounted:/data
+            - c:/Data/AgileDataPipelineProject/mounted:/data
         networks:
             - docker-kafka_kfk-net
 networks:

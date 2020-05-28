@@ -2,10 +2,11 @@ from kafka import KafkaProducer
 import json
 import pandas as pd
 import time
+import simplejson
 
 # KAFKA SETUP
 producer = KafkaProducer(bootstrap_servers='kafka:9090')
-topic_name = 'sample'
+topic_name = 'trafficTopic1'
 stream_offset_start = 0
 stream_no_of_recs = 1
 stream_interval = 20
@@ -26,11 +27,16 @@ while True:
     loop_stream_offset_start = loop_stream_offset_start + stream_no_of_recs
     loop_stream_offset_end = loop_stream_offset_end + stream_no_of_recs
     
+    for row in df.iloc[loop_stream_offset_start:loop_stream_offset_end].to_dict(orient='records'):
+        #producer.send(topic_name, json.dumps(row).encode('utf-8')) 
+        producer.send(topic_name, simplejson.dumps(row, ignore_nan=True).encode('utf-8')) 
+        
+    
     # EXTRACT RECS
-    json_str = df.iloc[loop_stream_offset_start:loop_stream_offset_end].to_json(orient='records')
+    #json_str = df.iloc[loop_stream_offset_start:loop_stream_offset_end].to_json(orient='records')
     
     # SEND DATA
-    producer.send(topic_name, json_str.encode('utf-8'))
+    #producer.send(topic_name, json_str.encode('utf-8'))
     #print(json_str)
     
     # SLEEP FOR x SECS

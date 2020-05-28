@@ -16,7 +16,7 @@ val kafkaParams = Map[String, Object](
 )
 
 //Can have multiple topics separated by comma
-val topics = Array("trafficTopic1")
+val topics = Array("sample")
 
 // Accumulating results in batches of
 val batchInterval = Seconds(10)
@@ -39,6 +39,19 @@ val messages = dstream.map(record => (record.key, record.value))
 messages.foreachRDD { rdd =>
 
   println("Processed messages in this batch: " + rdd.count())
+  //val df = rdd.toDF()
+  //df.printSchema()
+  //df.select("_2").show(false)
+  
+  // Transform to DF based on json schema 
+  // TODO: use predefined schema(?)
+  val rddJson = rdd.map(_._2.toString)
+  val df = spark.read.json(rddJson)
+  
+  df.printSchema()
+  df.show(false)
+  
+
   
 }
 

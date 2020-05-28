@@ -1,7 +1,7 @@
 # Dockerfile
 
 # FROM directive instructing base image to build upon
-FROM streamingenv-base:0.4
+FROM streamingenv-base:0.5
 
 WORKDIR /usr/src/app
 
