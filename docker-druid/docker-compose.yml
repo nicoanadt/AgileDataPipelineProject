@@ -1,0 +1,146 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+version: "2.2"
+
+volumes:
+  metadata_data: {}
+  middle_var: {}
+  historical_var: {}
+  broker_var: {}
+  coordinator_var: {}
+  router_var: {}
+
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=FoolishPassword
+      - POSTGRES_USER=druid
+      - POSTGRES_DB=druid
+    networks:
+      - docker-kafka_kfk-net
+
+  # Need 3.5 or later for container nodes
+  zookeeperdruid:
+    container_name: zookeeperdruid
+    image: zookeeper:3.5
+    environment:
+      - ZOO_MY_ID=1
+    networks:
+      - docker-kafka_kfk-net
+
+  coordinator:
+    image: apache/druid:0.18.1
+    container_name: coordinator
+    volumes:
+      - ./storage:/opt/data
+      - coordinator_var:/opt/druid/var
+    depends_on: 
+      - zookeeperdruid
+      - postgres
+    ports:
+      - "9081:8081"
+    command:
+      - coordinator
+    env_file:
+      - environment
+    networks:
+      - docker-kafka_kfk-net
+
+  broker:
+    image: apache/druid:0.18.1
+    container_name: broker
+    volumes:
+      - broker_var:/opt/druid/var
+    depends_on: 
+      - zookeeperdruid
+      - postgres
+      - coordinator
+    ports:
+      - "9082:8082"
+    command:
+      - broker
+    env_file:
+      - environment
+    networks:
+      - docker-kafka_kfk-net
+
+  historical:
+    image: apache/druid:0.18.1
+    container_name: historical
+    volumes:
+      - ./storage:/opt/data
+      - historical_var:/opt/druid/var
+    depends_on: 
+      - zookeeperdruid
+      - postgres
+      - coordinator
+    ports:
+      - "9083:8083"
+    command:
+      - historical
+    env_file:
+      - environment
+    networks:
+      - docker-kafka_kfk-net
+
+  middlemanager:
+    image: apache/druid:0.18.1
+    container_name: middlemanager
+    volumes:
+      - ./storage:/opt/data
+      - middle_var:/opt/druid/var
+    depends_on: 
+      - zookeeperdruid
+      - postgres
+      - coordinator
+    ports:
+      - "9091:8091"
+    command:
+      - middleManager
+    env_file:
+      - environment
+    networks:
+      - docker-kafka_kfk-net
+
+  router:
+    image: apache/druid:0.18.1
+    container_name: router
+    volumes:
+      - router_var:/opt/druid/var
+    depends_on:
+      - zookeeperdruid
+      - postgres
+      - coordinator
+    ports:
+      - "9888:8888"
+    command:
+      - router
+    env_file:
+      - environment
+    networks:
+      - docker-kafka_kfk-net
+
+networks:
+    docker-kafka_kfk-net:
+        external: true
