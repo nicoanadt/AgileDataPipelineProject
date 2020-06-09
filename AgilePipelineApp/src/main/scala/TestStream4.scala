@@ -2,10 +2,9 @@ package com.example
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType, FloatType};
-import org.apache.spark.sql.Column
+import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
 
-object TestStream3 {
+object TestStream4 {
 
   def main(args: Array[String]): Unit = {
     val spark = SparkSession
@@ -21,8 +20,8 @@ object TestStream3 {
     val broker = "kafka:9090"
 
     // Can have multiple topics separated by comma
-    val topic_source = "simple1"
-    val topic_target = "simple2"
+    val topic_source = "trafficTopic1"
+    val topic_target = "trafficTopic2"
 
     // Read from kafka stream
     val df = spark
@@ -39,11 +38,30 @@ object TestStream3 {
 
     // SCHEMA Definition
     val rawpvrSchema = new StructType()
-      .add("k1",StringType, true)
-      .add("k2",StringType, true)
-      .add("k3",StringType, true)
-      .add("k4",IntegerType, true)
-      .add("k5",FloatType, true)
+      .add("site_id",StringType, true)
+      .add("date",StringType, true)
+      .add("lane",IntegerType, true)
+      .add("lane_name",StringType, true)
+      .add("direction",IntegerType, true)
+      .add("direction_name",StringType, true)
+      .add("reverse",IntegerType, true)
+      .add("class_scheme",IntegerType, true)
+      .add("class",IntegerType, true)
+      .add("class_name",StringType, true)
+      .add("length",FloatType, true)
+      .add("headway",FloatType, true)
+      .add("gap",FloatType, true)
+      .add("speed",FloatType, true)
+      .add("weight",FloatType, true)
+      .add("vehicle_id",StringType, true)
+      .add("flags",IntegerType, true)
+      .add("flag_text",StringType, true)
+      .add("num_axles",IntegerType, true)
+      .add("axle_weights",StringType, true)
+      .add("axle_spacings",StringType, true)
+
+
+
 
     // CONVERT JSON STRING in VALUE to JSON STRUCTURE using SCHEMA
     val dfB = dfA.withColumn("value", from_json(col("value"), rawpvrSchema))
@@ -54,17 +72,17 @@ object TestStream3 {
     // DO SOME OPERATION HERE ...
 
     /// 1 FILTER
-    val dfD = dfC.filter("k2 == 'v2'")
+    val dfD = dfC.filter("headway >= 0")
 
     /// 2 RENAME
     // val dfE = df.withColumnRenamed("dob","DateOfBirth")
-    val dfE = dfD.withColumnRenamed("k2","k2new")
+    //val dfE = dfD.withColumnRenamed("k2","k2new")
 
     /// 3 REMOVE COL
-    val dfF = dfE.drop("k3")
+    //val dfF = dfE.drop("k3")
 
     /// 4 ADD COL
-     val dfG = dfF.withColumn("k1added", upper(col("k1")))
+    // val dfG = dfF.withColumn("k1added", upper(col("k1")))
 
     /// 5 AGGREGATION
     // val dfH = goalsDF
@@ -72,7 +90,7 @@ object TestStream3 {
     //  .agg(sum("goals"))
 
     // CONVERT BACK TO JSON STRING
-    val dfH = dfG.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
+    val dfH = dfD.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
 
     // START STREAMING to output
     val query = dfH
