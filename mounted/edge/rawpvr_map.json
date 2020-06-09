@@ -1,0 +1,88 @@
+{
+  "map": [
+    {
+      "i": "Site ID",
+      "o": "site_id"
+    },
+    {
+      "i": "Date",
+      "o": "date"
+    },
+    {
+      "i": "Lane",
+      "o": "lane"
+    },
+    {
+      "i": "Lane Name",
+      "o": "lane_name"
+    },
+    {
+      "i": "Direction",
+      "o": "direction"
+    },
+    {
+      "i": "Direction Name",
+      "o": "direction_name"
+    },
+    {
+      "i": "Reverse",
+      "o": "reverse"
+    },
+    {
+      "i": "Class Scheme",
+      "o": "class_scheme"
+    },
+    {
+      "i": "Class",
+      "o": "class"
+    },
+    {
+      "i": "Class Name",
+      "o": "class_name"
+    },
+    {
+      "i": "Length (m)",
+      "o": "length"
+    },
+    {
+      "i": "Headway (s)",
+      "o": "headway"
+    },
+    {
+      "i": "Gap (s)",
+      "o": "gap"
+    },
+    {
+      "i": "Speed (mph)",
+      "o": "speed"
+    },
+    {
+      "i": "Weight (tonnes)",
+      "o": "weight"
+    },
+    {
+      "i": "Vehicle Id",
+      "o": "vehicle_id"
+    },
+    {
+      "i": "Flags",
+      "o": "flags"
+    },
+    {
+      "i": "Flag Text",
+      "o": "flag_text"
+    },
+    {
+      "i": "Num Axles",
+      "o": "num_axles"
+    },
+    {
+      "i": "Axle Weights (tonnes)...",
+      "o": "axle_weights"
+    },
+    {
+      "i": "Axle Spacings (m)...",
+      "o": "axle_spacings"
+    }
+  ]
+}

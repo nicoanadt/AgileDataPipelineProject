@@ -1,0 +1,23 @@
+{
+	"Site ID": "site_id",
+	"Date": "date",
+	"Lane": "lane",
+	"Lane Name": "lane_name",
+	"Direction": "direction",
+	"Direction Name": "direction_name",
+	"Reverse": "reverse",
+	"Class Scheme": "class_scheme",
+	"Class": "class",
+	"Class Name": "class_name",
+	"Length (m)": "length",
+	"Headway (s)": "headway",
+	"Gap (s)": "gap",
+	"Speed (mph)": "speed",
+	"Weight (tonnes)": "weight",
+	"Vehicle Id": "vehicle_id",
+	"Flags": "flags",
+	"Flag Text": "flag_text",
+	"Num Axles": "num_axles",
+	"Axle Weights (tonnes)...": "axle_weights",
+	"Axle Spacings (m)...": "axle_spacings"
+}
