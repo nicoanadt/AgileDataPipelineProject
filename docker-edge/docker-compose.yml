@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+    python_edge:
+        build: .  # instead of image:
+        container_name: python_edge
+        networks:
+            - docker-kafka_kfk-net
+        volumes:
+            - c:/Data/AgileDataPipelineProject/mounted:/data
+   
+networks:
+    docker-kafka_kfk-net:
+        external: true
+        
+# run using: docker-compose run --rm python_edge python /bin/bash
+# or: docker-compose run --rm python_edge python /data/edge/kafka-streamer2.py
