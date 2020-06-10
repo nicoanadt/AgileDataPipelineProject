@@ -8,7 +8,9 @@ The data pipeline is composed of the following technology stack:
 - Apache Druid
 - Apache Superset
 
-*Disclaimer: This is an ongoing project for our personal use with dynamic changes and moving target product.* 
+**More documentation is available in [gitbook](https://nico-anandito.gitbook.io/agile-data-pipeline-project/)**
+
+*Disclaimer: This is an ongoing project for our personal use with dynamic changes and moving target.* 
 
 ## Environment setup
 ### Apache Kafka
@@ -69,7 +71,7 @@ git clone --branch release--0.68 https://github.com/apache/incubator-superset/
 cd incubator-superset
 ```
 
-Add network information in `docker-compose.yml`:
+Add network information in `docker-compose.yml` to connect Superset to other docker containers:
 1. Add network info to ALL services
     ```
         ...
