@@ -81,14 +81,27 @@ Add network information in `docker-compose.yml` to connect Superset to other doc
     ```
 2. Join existing network by adding this information to the end of the file
     ```
+        ...
         networks:
             docker-kafka_kfk-net:
                 external: true
     ```
-Then, start the docker container with the following command
+Then, start the docker container with the following command:
 ```
 cd incubator-superset
 docker-compose up -d
 ```
 
 Docker containers will start in the background. The Superset UI will be available in `localhost:8088`
+
+### Python edge node
+
+This container is used to execute python scripts. 
+Scripts are stored in host machine volume that is mounted as `/data` in the container (refer to `Dockerfile`) 
+
+Start the docker container with the following command:
+
+``` 
+cd docker-edge
+docker-compose run --rm python_edge python /bin/bash
+``` 
