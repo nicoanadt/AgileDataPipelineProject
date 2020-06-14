@@ -1,10 +1,6 @@
 package com.example
 
-import org.apache.spark.streaming._
-import org.apache.spark.sql._
 import org.apache.spark.sql.SparkSession
-
-
 
 object TestStream1 {
 
