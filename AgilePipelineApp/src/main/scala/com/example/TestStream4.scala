@@ -1,7 +1,7 @@
 package com.example
 
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, from_json}
+import org.apache.spark.sql.functions.{col, from_json,upper,to_timestamp,window}
 import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
 
 object TestStream4 {
@@ -21,7 +21,7 @@ object TestStream4 {
 
     // Can have multiple topics separated by comma
     val topic_source = "trafficTopic1"
-    val topic_target = "trafficTopic2"
+    val topic_target = "trafficTopicAvg"
 
     // Read from kafka stream
     val df = spark
@@ -71,29 +71,60 @@ object TestStream4 {
 
     // DO SOME OPERATION HERE ...
 
+    val example =
+      """select upper(class_name) as class_name_up,
+         direction_name as compass_bearing, avg(speed) as avg_speed from rawpvr where headway>=0
+         group by upper(class_name), direction_name"""
+
     /// 1 FILTER
     val dfD = dfC.filter("headway >= 0")
 
     /// 2 RENAME
-    // val dfE = df.withColumnRenamed("dob","DateOfBirth")
-    //val dfE = dfD.withColumnRenamed("k2","k2new")
+    val dfE = dfD.withColumnRenamed("direction_name","compass_bearing")
 
     /// 3 REMOVE COL
-    //val dfF = dfE.drop("k3")
+    val dfF = dfE.drop("site_id")
+//      .drop("date")
+      .drop("lane")
+      .drop("lane_name")
+      .drop("direction")
+//      .drop("direction_name")
+      .drop("reverse")
+      .drop("class_scheme")
+      .drop("class")
+//      .drop("class_name")
+      .drop("length")
+      .drop("headway")
+      .drop("gap")
+//      .drop("speed")
+      .drop("weight")
+      .drop("vehicle_id")
+      .drop("flags")
+      .drop("flag_text")
+      .drop("num_axles")
+      .drop("axle_weights")
+      .drop("axle_spacings")
+
 
     /// 4 ADD COL
-    // val dfG = dfF.withColumn("k1added", upper(col("k1")))
+    val dfG = dfF.withColumn("class_name_up", upper(col("class_name")))
+      .withColumn("date", to_timestamp(col("date")))
 
     /// 5 AGGREGATION
-    // val dfH = goalsDF
-    //  .groupBy("name")
-    //  .agg(sum("goals"))
+     val dfH = dfG
+      .withWatermark("date", "10 minutes")
+      .groupBy(
+        window($"date", "10 minutes", "5 minutes"),
+        $"class_name_up",
+        $"compass_bearing"
+      )
+      .avg("speed")
 
     // CONVERT BACK TO JSON STRING
-    val dfH = dfD.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
+    val dfI = dfH.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
 
     // START STREAMING to output
-    val query = dfH
+    val query = dfI
       .writeStream // use `write` for batch, like DataFrame
       .format("kafka")
       .option("kafka.bootstrap.servers", broker)

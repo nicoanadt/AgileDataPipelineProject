@@ -71,21 +71,32 @@ object TestStream5 {
 
     // DO SOME OPERATION HERE ...
 
+    // 0 REGISTER TABLE
+    dfC.createOrReplaceTempView("rawpvr")
+
     /// 1 FILTER
-    val dfD = dfC.filter("headway >= 0")
+    val dfD = spark.sql("select * from rawpvr where headway>=0")
+
+    val example = """select upper(k1) as k1, k2 as k2new, k3 ,k5, sum(v1) as sum_v1 from rawpvr where headway>=0
+      group by upper(k1), k2, k3, k5"""
+
+    val example2 =
+      """select upper(class_name) as class_name_up,
+         direction_name as compass_bearing, avg(speed) as avg_speed from rawpvr where headway>=0
+         group by upper(class_name), direction_name"""
 
     /// 2 RENAME
-    // val dfE = df.withColumnRenamed("dob","DateOfBirth")
-    //val dfE = dfD.withColumnRenamed("k2","k2new")
+    // val dfE = spark.sql("select *,a as b from rawpvr")
 
     /// 3 REMOVE COL
-    //val dfF = dfE.drop("k3")
+    //val dfF = spark.sql("select *,a as b from rawpvr")
 
     /// 4 ADD COL
     // val dfG = dfF.withColumn("k1added", upper(col("k1")))
 
     /// 5 AGGREGATION
     // val dfH = goalsDF
+    //  .withWatermark("timestamp", "10 minutes")
     //  .groupBy("name")
     //  .agg(sum("goals"))
 
