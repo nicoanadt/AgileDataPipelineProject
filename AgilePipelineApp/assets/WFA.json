@@ -1,0 +1,184 @@
+{
+  "config": {
+    "name": "Configuration A",
+    "desc": "This is a sample use case",
+    "created_by": "Nico Anandito",
+    "date_created": "2020-06-23 00:00:00",
+    "date_modified": "2020-06-23 00:00:00"
+  },
+  "workflow": {
+    "source": {
+      "type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "trafficTopicNow",
+      "startingOffsets": "earliest",
+      "schema": [
+        {
+          "name": "site_id",
+          "type": "string"
+        },
+        {
+          "name": "date",
+          "type": "string"
+        },
+        {
+          "name": "lane",
+          "type": "int"
+        },
+        {
+          "name": "lane_name",
+          "type": "string"
+        },
+        {
+          "name": "direction",
+          "type": "int"
+        },
+        {
+          "name": "direction_name",
+          "type": "string"
+        },
+        {
+          "name": "reverse",
+          "type": "int"
+        },
+        {
+          "name": "class_scheme",
+          "type": "int"
+        },
+        {
+          "name": "class",
+          "type": "int"
+        },
+        {
+          "name": "class_name",
+          "type": "string"
+        },
+        {
+          "name": "length",
+          "type": "float"
+        },
+        {
+          "name": "headway",
+          "type": "float"
+        },
+        {
+          "name": "gap",
+          "type": "float"
+        },
+        {
+          "name": "speed",
+          "type": "float"
+        },
+        {
+          "name": "weight",
+          "type": "float"
+        },
+        {
+          "name": "vehicle_id",
+          "type": "string"
+        },
+        {
+          "name": "flags",
+          "type": "int"
+        },
+        {
+          "name": "flag_text",
+          "type": "string"
+        },
+        {
+          "name": "num_axles",
+          "type": "int"
+        },
+        {
+          "name": "axle_weights",
+          "type": "string"
+        },
+        {
+          "name": "axle_spacings",
+          "type": "string"
+        }
+      ]
+    },
+    "ops": [
+      {
+        "type": "Filter",
+        "params": [
+          {
+            "expr": "headway >= 0"
+          }
+        ]
+      },
+      {
+        "type": "Rename",
+        "params": [
+          {
+            "old_name": "direction_name",
+            "new_name": "compass_bearing"
+          }
+        ]
+      },
+      {
+        "type": "Drop",
+        "params": [
+          "site_id",
+          "lane",
+          "lane_name",
+          "direction",
+          "reverse",
+          "class_scheme",
+          "class",
+          "length",
+          "headway",
+          "gap",
+          "weight",
+          "vehicle_id",
+          "flags",
+          "flag_text",
+          "num_axles",
+          "axle_weights",
+          "axle_spacings"
+        ]
+      },
+      {
+        "type": "Add",
+        "params": [
+          {
+            "name": "class_name_up",
+            "expr": "upper(class_name)"
+          },
+          {
+            "name": "date",
+            "expr": "to_timestamp(date)"
+          }
+        ]
+      },
+      {
+        "type": "Agg",
+        "params": {
+          "WatermarkColumn": "date",
+          "WatermarkDelayThreshold": "10 minutes",
+          "WindowTimeColumn": "date",
+          "WindowDuration": "10 minutes"
+        },
+        "paramsAgg": {
+          "groupByCols": [
+            "class_name_up",
+            "compass_bearing"
+          ],
+          "aggCols": [
+            "avg(speed) as avg_speed"
+          ]
+        }
+      }
+    ],
+    "target": {
+      "type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "trafficTopicAvg",
+      "checkpointLocation": "/tmp/apps/checkpoint"
+    }
+  },
+  "execution": {
+    "app_name": "WorkflowA"
+  }
+}
