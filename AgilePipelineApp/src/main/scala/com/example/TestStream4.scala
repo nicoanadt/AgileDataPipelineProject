@@ -1,7 +1,7 @@
 package com.example
 
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, from_json,upper,to_timestamp,window}
+import org.apache.spark.sql.functions.{avg, col, from_json, to_timestamp, upper, window}
 import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
 
 object TestStream4 {
@@ -118,7 +118,8 @@ object TestStream4 {
         $"class_name_up",
         $"compass_bearing"
       )
-      .avg("speed")
+//      .avg("speed")
+       .agg(avg("speed").as("avg_spd"))
 
     // CONVERT BACK TO JSON STRING
     val dfI = dfH.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")

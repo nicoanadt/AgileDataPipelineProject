@@ -1,67 +1,46 @@
 package uk.ac.man.cs.agiledata
 
-import org.apache.spark.sql.Column
+import scala.collection.mutable.ArrayBuffer
+import org.apache.spark.sql.functions._
 
 /**
- * Base class
- * @param name
- */
-class WFConfigOps(name: String) {
-  def getOpsName(): String = {
-    return name
-  }
-}
-
-/**
- * Child class
- * @param name
- * @param paramArr
- */
-class WFConfigOpsArr(name: String, paramArr: Array[String]) extends WFConfigOps(name) {
-  def getOpsArrParams(): Array[String] = {
-    return paramArr
-  }
-}
-
-/**
- * Child class
- * @param name
- * @param paramTupleArr
- */
-class WFConfigOpsColTuples(name: String, paramTupleArr: Array[(String,Column)]) extends WFConfigOps(name) {
-  def getOpsTuplesParams(): Array[(String,Column)] = {
-    return paramTupleArr
-  }
-}
-
-/**
- * Child class
- * @param name
- * @param paramTupleArr
- */
-class WFConfigOpsStrTuples(name: String, paramTupleArr: Array[(String,String)]) extends WFConfigOps(name) {
-  def getOpsTuplesParams(): Array[(String,String)] = {
-    return paramTupleArr
-  }
-}
-
-class WFConfigOpsMap(name: String, paramMap: Map[String,String]) extends WFConfigOps(name) {
-  def getOpsMapParams(): Map[String,String] = {
-    return paramMap
-  }
-}
-
-/**
- * strParam Map(String,String)
- * multiParam Map(String,Array[String])
  *
- * @param name
- * @param paramAddMap
- * @param aggParam
  */
-class WFConfigOpsAgg(name: String, paramAddMap: Map[String,String], multiParam: Map[String,Array[String]]) extends WFConfigOpsMap(name, paramAddMap) {
-  def getMultiParam(): Map[String,Array[String]] = {
-    return multiParam
+class WFConfigOps {
+  var ops = new ArrayBuffer[ConfigOps]()
+
+  ops += new ConfigOpsArr("Filter", Array("headway >= 0"))
+  ops += new ConfigOpsArr("Rename", Array("direction_name","compass_bearing"))
+  ops += new ConfigOpsArr("Drop",
+    Array(
+      "site_id", /*"date",*/ "lane", "lane_name", "direction",
+      /*"direction_name",*/ "reverse", "class_scheme", "class", /*"class_name",*/ "length", "headway", "gap",
+      /*"speed",*/ "weight","vehicle_id", "flags", "flag_text", "num_axles", "axle_weights", "axle_spacings"
+    )
+  )
+  ops += new ConfigOpsStrTuples("Add",
+      Array(
+        ("class_name_up", "upper(class_name)"),
+        ("date", "to_timestamp(date)")
+      )
+    )
+
+  ops += new ConfigOpsAgg("Agg",
+    Map(
+      ("WatermarkColumn" -> "date"),
+      ("WatermarkDelayThreshold" -> "10 minutes"),
+      ("WindowTimeColumn" -> "date"),
+      ("WindowDuration" -> "10 minutes")
+//      ("WindowSlideDuration" -> null)
+    ),
+    Map(
+      ("groupByCols" -> Array("class_name_up","compass_bearing")),
+      ("aggCols" -> Array("avg(speed) as avg_speed"))
+    )
+  )
+
+
+  def getConfigOps() : Array[ConfigOps] ={
+    return ops.toArray
   }
 }
-

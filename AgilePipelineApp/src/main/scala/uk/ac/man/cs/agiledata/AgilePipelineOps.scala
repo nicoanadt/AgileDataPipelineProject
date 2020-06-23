@@ -25,8 +25,7 @@ class AgilePipelineOps {
    * RENAME COLUMN FUNCTION
    *
    * @param dfInput
-   * @param existingName
-   * @param newName
+   * @param colNames
    * @return
    */
   def Rename(dfInput : sql.DataFrame, colNames: Array[String]): sql.DataFrame = {
@@ -58,10 +57,10 @@ class AgilePipelineOps {
    * @param paramAddTuples
    * @return
    */
-  def Add(dfInput : sql.DataFrame, paramAddTuples: Array[(String,Column)]): sql.DataFrame = {
+  def Add(dfInput : sql.DataFrame, paramAddTuples: Array[(String,String)]): sql.DataFrame = {
     var dfTemp1 = dfInput
     for (tuple <- paramAddTuples) {
-      dfTemp1 = dfTemp1.withColumn(tuple._1, tuple._2)
+      dfTemp1 = dfTemp1.withColumn(tuple._1, expr(tuple._2))
     }
     return dfTemp1
   }
@@ -82,7 +81,7 @@ class AgilePipelineOps {
    * @param aggConfig
    * @return
    */
-  def Aggregate(dfInput : sql.DataFrame, aggConfig: WFConfigOpsAgg): sql.DataFrame = {
+  def Aggregate(dfInput : sql.DataFrame, aggConfig: ConfigOpsAgg): sql.DataFrame = {
 
     val WatermarkColumn = aggConfig.getOpsMapParams()("WatermarkColumn")
     val WatermarkDelayThreshold = aggConfig.getOpsMapParams()("WatermarkDelayThreshold")
@@ -92,8 +91,8 @@ class AgilePipelineOps {
     val groupByColsArr = aggConfig.getMultiParam()("groupByCols")
     val aggParamArr = aggConfig.getMultiParam()("aggCols")
 
-    val dfTemp1 = dfInput
-      .withWatermark(WatermarkColumn, WatermarkDelayThreshold)
+    // Assign watermark
+    val dfTemp1 = dfInput.withWatermark(WatermarkColumn, WatermarkDelayThreshold)
 
     // Check whether the params include WindowSlideDuration
     val windowColumn = if (WindowSlideDuration != "null") {
@@ -120,10 +119,6 @@ class AgilePipelineOps {
 
     return dfResult
 
-
-
   }
-
-
 
 }

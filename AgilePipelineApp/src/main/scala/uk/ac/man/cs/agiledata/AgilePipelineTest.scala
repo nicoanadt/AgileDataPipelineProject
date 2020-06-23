@@ -20,92 +20,80 @@ object AgilePipelineTest {
     // For implicit conversions like converting RDDs to DataFrames
     import spark.implicits._
 
-    val broker = "kafka:9090"
+    // GET CONFIGURATIONS ------------------------------------------------------
+    // 1. SCHEMA
+    val schemaConfiguration = new WFConfigSchema()
+    val schemaEngine = new AgilePipelineSchema()
+    val sourceSchema = schemaEngine.getStruct( schemaConfiguration.getConfigSchema() )
 
-    // Can have multiple topics separated by comma
-    val topic_source = "trafficTopic1"
-    val topic_target = "trafficTopicAvg"
+    // 2. SOURCE
+    val sourceConfiguration = new WFConfigSource()
+    val src_broker = sourceConfiguration.getConfigSource().getMap()("broker")
+    val src_topic = sourceConfiguration.getConfigSource().getMap()("topic")
+    val src_startingOffsets = sourceConfiguration.getConfigSource().getMap()("startingOffsets")
+
+    // 3. OPS
+    val opsConfiguration = new WFConfigOps()
+    val opsEngine = new AgilePipelineOps()
+
+    // 4. TARGET
+    val targetConfiguration = new WFConfigTarget()
+    val tgt_broker = targetConfiguration.getConfigTarget().getMap()("broker")
+    val tgt_topic = targetConfiguration.getConfigTarget().getMap()("topic")
+    val tgt_checkpointLocation = targetConfiguration.getConfigTarget().getMap()("checkpointLocation")
+
 
     // Read from kafka stream
     val df = spark
       .readStream
       .format("kafka")
-      .option("kafka.bootstrap.servers", broker)
-      .option("subscribe", topic_source)
+      .option("kafka.bootstrap.servers", src_broker)
+      .option("subscribe", src_topic)
       .option("failOnDataLoss","false")
-      .option("startingOffsets", "earliest")
+      .option("startingOffsets", src_startingOffsets)
       .load()
 
     // EXTRACT KEY and VALUE only while casting to string
     val dfA = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").as[(String, String)]
 
-    // SCHEMA Definition
-    val rawpvrSchema = new StructType()
-      .add("site_id",StringType, true)
-      .add("date",StringType, true)
-      .add("lane",IntegerType, true)
-      .add("lane_name",StringType, true)
-      .add("direction",IntegerType, true)
-      .add("direction_name",StringType, true)
-      .add("reverse",IntegerType, true)
-      .add("class_scheme",IntegerType, true)
-      .add("class",IntegerType, true)
-      .add("class_name",StringType, true)
-      .add("length",FloatType, true)
-      .add("headway",FloatType, true)
-      .add("gap",FloatType, true)
-      .add("speed",FloatType, true)
-      .add("weight",FloatType, true)
-      .add("vehicle_id",StringType, true)
-      .add("flags",IntegerType, true)
-      .add("flag_text",StringType, true)
-      .add("num_axles",IntegerType, true)
-      .add("axle_weights",StringType, true)
-      .add("axle_spacings",StringType, true)
-
-
-
 
     // CONVERT JSON STRING in VALUE to JSON STRUCTURE using SCHEMA
-    val dfB = dfA.withColumn("value", from_json(col("value"), rawpvrSchema))
+    val dfB = dfA.withColumn("value", from_json(col("value"), sourceSchema))
 
     // EXPLODE JSON STRUCTURE in VALUE to its own columns
     val dfC = dfB.select("value.*")
 
-    // DO SOME OPERATION HERE ...
+    // DO SOME OPERATION HERE
+    // AGILE PIPELINE
 
-    /// AGILE PIPELINE
-
-    var WFConfigs = new WFConfig()
-    var Ops = new AgilePipelineOps()
-
+    // Assign opsResult as preparation of loop
     var opsResult: sql.DataFrame = dfC
 
     /**
      * Cycle through operations to create the pipeline based on configuration
      */
-    for (config <- WFConfigs.getWFConfigs()) {
+    for (opsRow <- opsConfiguration.getConfigOps()) {
 
-      opsResult = config match {
-        case config: WFConfigOpsArr if config.getOpsName() == "Filter" =>
+      opsResult = opsRow match {
+        case opsRow: ConfigOpsArr if opsRow.getOpsName() == "Filter" =>
           print("filter",false)
-          Ops.Filter(opsResult,config.getOpsArrParams()(0))
+          opsEngine.Filter(opsResult,opsRow.getOpsArrParams()(0))
 
-        case config: WFConfigOpsArr if config.getOpsName() == "Rename" =>
+        case opsRow: ConfigOpsArr if opsRow.getOpsName() == "Rename" =>
           print("rename",false)
-          Ops.Rename(opsResult, config.getOpsArrParams())
+          opsEngine.Rename(opsResult, opsRow.getOpsArrParams())
 
-        case config: WFConfigOpsArr if config.getOpsName() == "Drop" =>
+        case opsRow: ConfigOpsArr if opsRow.getOpsName() == "Drop" =>
           print("Drop",false)
-          Ops.Drop(opsResult,config.getOpsArrParams())
+          opsEngine.Drop(opsResult,opsRow.getOpsArrParams())
 
-        case config: WFConfigOpsColTuples if config.getOpsName() == "Add" =>
+        case opsRow: ConfigOpsStrTuples if opsRow.getOpsName() == "Add" =>
           print("add",false)
-          Ops.Add(opsResult,config.getOpsTuplesParams())
+          opsEngine.Add(opsResult,opsRow.getOpsTuplesParams())
 
-        case config: WFConfigOpsAgg if config.getOpsName() == "Agg" =>
+        case opsRow: ConfigOpsAgg if opsRow.getOpsName() == "Agg" =>
           print("Agg",false)
-          Ops.Aggregate(opsResult,config)
+          opsEngine.Aggregate(opsResult,opsRow)
 
       }
     }
@@ -118,17 +106,14 @@ object AgilePipelineTest {
     val query = dfI
       .writeStream // use `write` for batch, like DataFrame
       .format("kafka")
-      .option("kafka.bootstrap.servers", broker)
-      .option("topic", topic_target)
-      .option("checkpointLocation", "/tmp/apps/checkpoint")
+      .option("kafka.bootstrap.servers", tgt_broker)
+      .option("topic", tgt_topic)
+      .option("checkpointLocation", tgt_checkpointLocation)
       .start()
 
     // NEED to wait termination signal before exiting the app
     query.awaitTermination()
   }
-
-
-
 
 }
 
