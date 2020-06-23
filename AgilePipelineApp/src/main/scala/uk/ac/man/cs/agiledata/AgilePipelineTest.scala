@@ -4,6 +4,8 @@ import org.apache.spark.sql
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
+import scala.collection.mutable.ArrayBuffer
+import org.apache.spark.sql.Column
 
 object AgilePipelineTest {
 
@@ -82,47 +84,35 @@ object AgilePipelineTest {
     /**
      * Cycle through operations to create the pipeline based on configuration
      */
-    for (config <- WFConfigs.getWFConfig()) {
+    for (config <- WFConfigs.getWFConfigs()) {
 
       opsResult = config match {
-        case config: WFOpsArr if config.getOpsName() == "Filter" =>
+        case config: WFConfigOpsArr if config.getOpsName() == "Filter" =>
           print("filter",false)
-          Ops.Filter(opsResult,config.getOpsParams()(0))
+          Ops.Filter(opsResult,config.getOpsArrParams()(0))
 
-        case config: WFOpsArr if config.getOpsName() == "Rename" =>
+        case config: WFConfigOpsArr if config.getOpsName() == "Rename" =>
           print("rename",false)
-          Ops.Rename(opsResult, config.getOpsParams()(0), config.getOpsParams()(1))
+          Ops.Rename(opsResult, config.getOpsArrParams())
 
-        case config: WFOpsArr if config.getOpsName() == "Drop" =>
+        case config: WFConfigOpsArr if config.getOpsName() == "Drop" =>
           print("Drop",false)
-          Ops.Drop(opsResult,config.getOpsParams())
+          Ops.Drop(opsResult,config.getOpsArrParams())
 
-        case config: WFOpsTuples if config.getOpsName() == "Add" =>
+        case config: WFConfigOpsColTuples if config.getOpsName() == "Add" =>
           print("add",false)
           Ops.Add(opsResult,config.getOpsTuplesParams())
+
+        case config: WFConfigOpsAgg if config.getOpsName() == "Agg" =>
+          print("Agg",false)
+          Ops.Aggregate(opsResult,config)
 
       }
     }
 
 
-
-
-    /// 4 ADD COL
-    val dfG = dfF.withColumn("class_name_up", upper(col("class_name")))
-      .withColumn("date", to_timestamp(col("date")))
-
-    /// 5 AGGREGATION
-     val dfH = dfG
-      .withWatermark("date", "10 minutes")
-      .groupBy(
-        window($"date", "10 minutes", "5 minutes"),
-        $"class_name_up",
-        $"compass_bearing"
-      )
-      .avg("speed")
-
     // CONVERT BACK TO JSON STRING
-    val dfI = dfH.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
+    val dfI = opsResult.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
 
     // START STREAMING to output
     val query = dfI
