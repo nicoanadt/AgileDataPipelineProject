@@ -4,8 +4,10 @@ import org.apache.spark.sql
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
+
 import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.sql.Column
+import uk.ac.man.cs.agiledata.cfg.{ConfigOpsAgg, ConfigOpsArr, ConfigOpsStrTuples, WFConfigOps, WFConfigSchema, WFConfigSource, WFConfigTarget}
 
 object AgilePipelineTest {
 
@@ -43,7 +45,7 @@ object AgilePipelineTest {
     val tgt_checkpointLocation = targetConfiguration.getConfigTarget().getMap()("checkpointLocation")
 
 
-    // Read from kafka stream
+    // Read from kafka stream ------------------------------------------------------
     val df = spark
       .readStream
       .format("kafka")

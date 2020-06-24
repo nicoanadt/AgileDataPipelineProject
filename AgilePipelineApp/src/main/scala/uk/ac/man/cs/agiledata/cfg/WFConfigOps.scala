@@ -1,7 +1,6 @@
-package uk.ac.man.cs.agiledata
+package uk.ac.man.cs.agiledata.cfg
 
 import scala.collection.mutable.ArrayBuffer
-import org.apache.spark.sql.functions._
 
 /**
  *

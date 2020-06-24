@@ -3,6 +3,7 @@ package uk.ac.man.cs.agiledata
 import org.apache.spark.sql
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.functions._
+import uk.ac.man.cs.agiledata.cfg.ConfigOpsAgg
 
 
 /**

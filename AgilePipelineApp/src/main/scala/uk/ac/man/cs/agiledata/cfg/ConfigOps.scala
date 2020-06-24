@@ -1,4 +1,4 @@
-package uk.ac.man.cs.agiledata
+package uk.ac.man.cs.agiledata.cfg
 
 import org.apache.spark.sql.Column
 

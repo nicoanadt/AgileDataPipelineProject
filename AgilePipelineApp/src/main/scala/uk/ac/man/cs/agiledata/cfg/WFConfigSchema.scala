@@ -1,4 +1,4 @@
-package uk.ac.man.cs.agiledata
+package uk.ac.man.cs.agiledata.cfg
 
 class ConfigSchemaTuples(paramSchema: Array[(String,String)]) {
   def getConfigSchema(): Array[(String,String)] = {

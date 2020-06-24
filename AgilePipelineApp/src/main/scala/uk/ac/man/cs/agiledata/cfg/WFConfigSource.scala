@@ -1,4 +1,4 @@
-package uk.ac.man.cs.agiledata
+package uk.ac.man.cs.agiledata.cfg
 
 class ConfigSourceTargetMap(paramSource: Map[String,String]) {
   def getMap(): Map[String,String] = {

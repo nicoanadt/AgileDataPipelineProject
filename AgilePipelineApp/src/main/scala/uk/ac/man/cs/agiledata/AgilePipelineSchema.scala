@@ -1,7 +1,11 @@
 package uk.ac.man.cs.agiledata
 
 import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
+import uk.ac.man.cs.agiledata.cfg.ConfigSchemaTuples
 
+/**
+ * Convert config to structype
+ */
 class AgilePipelineSchema {
   def getStruct(param: ConfigSchemaTuples): StructType = {
     var returnStruct: StructType = new StructType()
