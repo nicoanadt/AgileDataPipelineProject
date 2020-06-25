@@ -29,8 +29,12 @@ class AgilePipelineOps {
    * @param colNames
    * @return
    */
-  def Rename(dfInput : sql.DataFrame, colNames: Array[String]): sql.DataFrame = {
-    return dfInput.withColumnRenamed(colNames(0),colNames(1))
+  def Rename(dfInput : sql.DataFrame, paramAddTuples: Array[(String,String)]): sql.DataFrame = {
+    var dfTemp1 = dfInput
+    for (tuple <- paramAddTuples) {
+      dfTemp1 = dfTemp1.withColumnRenamed(tuple._1,tuple._2)
+    }
+    return dfTemp1
   }
 
   /**

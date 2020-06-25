@@ -7,11 +7,22 @@ import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructTyp
 
 import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.sql.Column
-import uk.ac.man.cs.agiledata.cfg.{ConfigOpsAgg, ConfigOpsArr, ConfigOpsStrTuples, WFConfigOps, WFConfigSchema, WFConfigSource, WFConfigTarget}
+import uk.ac.man.cs.agiledata.cfg._
 
 object AgilePipelineTest {
 
   def main(args: Array[String]): Unit = {
+
+    if(args.isEmpty) {
+      println("Argument is empty")
+      return
+    }
+    val workflowID = args(0)
+
+
+    // GET Configuration from Database
+    val configFromDB = new ConfigDB().getConfiguration(workflowID)
+
     val spark = SparkSession
       .builder()
       .master("spark://sparkmst:7077")
@@ -24,35 +35,31 @@ object AgilePipelineTest {
 
     // GET CONFIGURATIONS ------------------------------------------------------
     // 1. SCHEMA
-    val schemaConfiguration = new WFConfigSchema()
+    val schemaConfiguration = new WFConfigSchema(configFromDB)
     val schemaEngine = new AgilePipelineSchema()
     val sourceSchema = schemaEngine.getStruct( schemaConfiguration.getConfigSchema() )
 
     // 2. SOURCE
-    val sourceConfiguration = new WFConfigSource()
-    val src_broker = sourceConfiguration.getConfigSource().getMap()("broker")
-    val src_topic = sourceConfiguration.getConfigSource().getMap()("topic")
-    val src_startingOffsets = sourceConfiguration.getConfigSource().getMap()("startingOffsets")
+    val sourceConfiguration = new WFConfigSource(configFromDB)
+    val srcConfigMap = sourceConfiguration.getConfigSource().getMap()
 
     // 3. OPS
-    val opsConfiguration = new WFConfigOps()
+    val opsConfiguration = new WFConfigOps(configFromDB)
     val opsEngine = new AgilePipelineOps()
 
     // 4. TARGET
-    val targetConfiguration = new WFConfigTarget()
-    val tgt_broker = targetConfiguration.getConfigTarget().getMap()("broker")
-    val tgt_topic = targetConfiguration.getConfigTarget().getMap()("topic")
-    val tgt_checkpointLocation = targetConfiguration.getConfigTarget().getMap()("checkpointLocation")
+    val targetConfiguration = new WFConfigTarget(configFromDB)
+    val tgtConfigMap = targetConfiguration.getConfigTarget().getMap()
 
 
     // Read from kafka stream ------------------------------------------------------
     val df = spark
       .readStream
       .format("kafka")
-      .option("kafka.bootstrap.servers", src_broker)
-      .option("subscribe", src_topic)
+      .option("kafka.bootstrap.servers", srcConfigMap("broker"))
+      .option("subscribe", srcConfigMap("topic"))
       .option("failOnDataLoss","false")
-      .option("startingOffsets", src_startingOffsets)
+      .option("startingOffsets", srcConfigMap("startingOffsets"))
       .load()
 
     // EXTRACT KEY and VALUE only while casting to string
@@ -78,23 +85,18 @@ object AgilePipelineTest {
 
       opsResult = opsRow match {
         case opsRow: ConfigOpsArr if opsRow.getOpsName() == "Filter" =>
-          print("filter",false)
           opsEngine.Filter(opsResult,opsRow.getOpsArrParams()(0))
 
-        case opsRow: ConfigOpsArr if opsRow.getOpsName() == "Rename" =>
-          print("rename",false)
-          opsEngine.Rename(opsResult, opsRow.getOpsArrParams())
+        case opsRow: ConfigOpsStrTuples if opsRow.getOpsName() == "Rename" =>
+          opsEngine.Rename(opsResult, opsRow.getOpsTuplesParams())
 
         case opsRow: ConfigOpsArr if opsRow.getOpsName() == "Drop" =>
-          print("Drop",false)
           opsEngine.Drop(opsResult,opsRow.getOpsArrParams())
 
         case opsRow: ConfigOpsStrTuples if opsRow.getOpsName() == "Add" =>
-          print("add",false)
           opsEngine.Add(opsResult,opsRow.getOpsTuplesParams())
 
         case opsRow: ConfigOpsAgg if opsRow.getOpsName() == "Agg" =>
-          print("Agg",false)
           opsEngine.Aggregate(opsResult,opsRow)
 
       }
@@ -108,9 +110,9 @@ object AgilePipelineTest {
     val query = dfI
       .writeStream // use `write` for batch, like DataFrame
       .format("kafka")
-      .option("kafka.bootstrap.servers", tgt_broker)
-      .option("topic", tgt_topic)
-      .option("checkpointLocation", tgt_checkpointLocation)
+      .option("kafka.bootstrap.servers", tgtConfigMap("broker"))
+      .option("topic", tgtConfigMap("topic"))
+      .option("checkpointLocation", tgtConfigMap("checkpointLocation"))
       .start()
 
     // NEED to wait termination signal before exiting the app

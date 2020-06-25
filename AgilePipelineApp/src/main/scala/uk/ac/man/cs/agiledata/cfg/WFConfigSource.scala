@@ -6,8 +6,18 @@ class ConfigSourceTargetMap(paramSource: Map[String,String]) {
   }
 }
 
-class WFConfigSource {
+class WFConfigSource(configFromDB : WFConfig) {
+
   val sourceWF = new ConfigSourceTargetMap(
+    Map(
+      "type" -> configFromDB.workflow.source.source_type,
+      "broker" -> configFromDB.workflow.source.broker,
+      "topic" -> configFromDB.workflow.source.topic,
+      "startingOffsets" -> configFromDB.workflow.source.startingOffsets
+    )
+  )
+
+  val sourceWF_BAK = new ConfigSourceTargetMap(
     Map(
       "type" -> "kafka",
       "broker" -> "kafka:9090",
@@ -21,8 +31,18 @@ class WFConfigSource {
   }
 }
 
-class WFConfigTarget {
+class WFConfigTarget(configFromDB : WFConfig) {
+
   val sourceWF = new ConfigSourceTargetMap(
+    Map(
+      "type" -> configFromDB.workflow.target.target_type,
+      "broker" -> configFromDB.workflow.target.broker,
+      "topic" -> configFromDB.workflow.target.topic,
+      "checkpointLocation" -> configFromDB.workflow.target.checkpointLocation
+    )
+  )
+
+  val sourceWF_BAK = new ConfigSourceTargetMap(
     Map(
       "type" -> "kafka",
       "broker" -> "kafka:9090",

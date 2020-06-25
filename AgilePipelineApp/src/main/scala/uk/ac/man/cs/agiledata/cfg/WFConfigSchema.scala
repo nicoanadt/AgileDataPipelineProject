@@ -6,8 +6,14 @@ class ConfigSchemaTuples(paramSchema: Array[(String,String)]) {
   }
 }
 
-class WFConfigSchema {
-  val schemaWF = new ConfigSchemaTuples(
+class WFConfigSchema(configFromDB: WFConfig) {
+
+  // Move schema from db macros to our array
+  val schemaListFromDB =  configFromDB.workflow.source.schema
+  val schemaArrFromDB = schemaListFromDB.map(x => (x.name,x.datatype)).toArray
+  val schemaWF = new ConfigSchemaTuples(schemaArrFromDB)
+
+  val schemaWF_BAK = new ConfigSchemaTuples(
     Array(
       ("site_id","string"),
       ("date","string"),

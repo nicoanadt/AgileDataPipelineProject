@@ -9,6 +9,7 @@ import scala.concurrent.duration.Duration
 // CASE CLASSES FOR MONGODB MACROS
 
 case class WFConfig(
+                     id: String,
                      config: Config,
                      workflow: Workflow,
                      execution: Execution
@@ -82,42 +83,54 @@ case class Workflow( source: Source, ops: List[Ops], target: Target )
 
 // END OF CASE CLASSES FOR MONGODB MACROS
 
-object DB {
-  import org.bson.codecs.configuration.CodecRegistries
-  import org.bson.codecs.configuration.CodecRegistries._
-  import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
-  import org.mongodb.scala.bson.codecs.Macros._
-  import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
+/**
+ *
+ */
+class ConfigDB {
+  def getConfiguration(workflowName: String): WFConfig ={
 
-  private val customCodecs = fromProviders(
-    createCodecProviderIgnoreNone(classOf[WFConfig]),
-    createCodecProviderIgnoreNone(classOf[Config]),
-    createCodecProviderIgnoreNone(classOf[Schema]),
-    createCodecProviderIgnoreNone(classOf[Source]),
-    createCodecProviderIgnoreNone(classOf[Ops]),
-    createCodecProviderIgnoreNone(classOf[Target]),
-    createCodecProviderIgnoreNone(classOf[Workflow]),
-    createCodecProviderIgnoreNone(classOf[opsParamFilter]),
-    createCodecProviderIgnoreNone(classOf[opsParamRename]),
-    createCodecProviderIgnoreNone(classOf[opsParamAdd]),
-    createCodecProviderIgnoreNone(classOf[opsParamAgg]),
-    createCodecProviderIgnoreNone(classOf[Execution])
-  )
-  private val codecRegistry = fromRegistries(customCodecs,DEFAULT_CODEC_REGISTRY)
+    import org.bson.codecs.configuration.CodecRegistries
+    import org.bson.codecs.configuration.CodecRegistries._
+    import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+    import org.mongodb.scala.bson.codecs.Macros._
+    import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
 
-  val uri: String = "mongodb://datapipeline:bigdata2020@mongodb_container:27017/datapipeline?retryWrites=true&w=majority"
-  System.setProperty("org.mongodb.async.type", "netty")
-  val client: MongoClient = MongoClient(uri)
-  private val database: MongoDatabase = client.getDatabase("datapipeline")
-    .withCodecRegistry(codecRegistry)
+    // Create custom codecs
+    val customCodecs =
+    fromProviders(
+      createCodecProviderIgnoreNone(classOf[WFConfig]),
+      createCodecProviderIgnoreNone(classOf[Config]),
+      createCodecProviderIgnoreNone(classOf[Schema]),
+      createCodecProviderIgnoreNone(classOf[Source]),
+      createCodecProviderIgnoreNone(classOf[Ops]),
+      createCodecProviderIgnoreNone(classOf[Target]),
+      createCodecProviderIgnoreNone(classOf[Workflow]),
+      createCodecProviderIgnoreNone(classOf[opsParamFilter]),
+      createCodecProviderIgnoreNone(classOf[opsParamRename]),
+      createCodecProviderIgnoreNone(classOf[opsParamAdd]),
+      createCodecProviderIgnoreNone(classOf[opsParamAgg]),
+      createCodecProviderIgnoreNone(classOf[Execution])
+    )
 
-  val configCollection: MongoCollection[WFConfig] = database.getCollection("config")
+    // Create codec registry based on custom codecs, merge with default registry
+    val codecRegistry =
+    fromRegistries(customCodecs, DEFAULT_CODEC_REGISTRY)
 
-  val allConfigs = Await.result(configCollection.find().toFuture(), Duration.Inf)
+    // Connect to mongodb database
+    val uri: String = "mongodb://datapipeline:bigdata2020@mongodb_container:27017/datapipeline?retryWrites=true&w=majority"
+    System.setProperty("org.mongodb.async.type", "netty")
+    val client: MongoClient = MongoClient(uri)
+    val database: MongoDatabase = client.getDatabase("datapipeline").withCodecRegistry(codecRegistry)
 
-  allConfigs(0).workflow.ops(0).ops_type
-  allConfigs(0).workflow.ops(0).params_filter(0).expr
+    // Get collection
+    val configCollection: MongoCollection[WFConfig] = database.getCollection("config")
 
+    // Query collection based on config.name, wait for result
+    val allConfigs = Await.result(configCollection.find(Document("id" -> workflowName)).toFuture(), Duration.Inf)
+
+    // Return first result
+    return allConfigs(0)
+  }
 }
 
 //class ConfigDB {
@@ -150,4 +163,4 @@ object DB {
 //
 //    return db
 //  }
-}
+//}
