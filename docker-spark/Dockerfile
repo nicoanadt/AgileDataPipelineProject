@@ -16,6 +16,14 @@ RUN wget -q https://www.mirrorservice.org/sites/ftp.apache.org/spark/spark-2.4.5
 	
 EXPOSE 8080 7077 8081 22
 
+# HDFS CONNECTION SETUP
+RUN wget -q https://archive.apache.org/dist/hadoop/core/hadoop-2.7.2/hadoop-2.7.2.tar.gz && \
+	tar -xzf hadoop-2.7.2.tar.gz && \
+	mv hadoop-2.7.2 /opt/hadoop && \
+	apt-get -y install sshpass && \
+	cp hdfs/core-site.xml /opt/hadoop/etc/hadoop && \
+	cp hdfs/hdfs-site.xml /opt/hadoop/etc/hadoop && \
+	cp hdfs/hadoop-env.sh /etc/profile.d/
 
 # CMD enable django in container run
 CMD ["deployment/start_cmd.sh"]

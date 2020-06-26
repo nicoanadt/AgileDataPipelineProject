@@ -2,7 +2,7 @@ version: '2'
 
 services:
     sparkmst:
-        image: streamingenv-spark:1.2
+        image: streamingenv-spark:1.3
         hostname: sparkmst
         ports:
             - "8080:8080"
