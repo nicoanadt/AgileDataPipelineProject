@@ -146,12 +146,13 @@ The HDFS will be available in:
 I use IntelliJ IDE to develop and build this Scala program.
 
 1. Import the project in `AgileDataPipeline` directory from IntelliJ
-2. Setup the sbt in your environement. 
+2. Setup the sbt in your environment. 
 3. Refresh the sbt (scala build tool) in the project to obtain the dependencies. Dependencies are listed in the `build.sbt` file.
-4. Build and compile the project.
+4. Build and compile the project from IDE.
 5. Use `sbt assembly` to generate runnable `AgilePipeline.jar`
 6. Copy the JAR to the Spark container
-7. Bash into the Spark container, either using `ssh` or `docker exec` 
+7. Bash into the Spark container, either using `ssh` or `docker exec`. 
+
 Execute the JAR using the following command
 ```
 cd /data/spark
