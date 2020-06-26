@@ -127,6 +127,7 @@ class ConfigDB {
 
     // Query collection based on config.name, wait for result
     val allConfigs = Await.result(configCollection.find(Document("id" -> workflowName)).toFuture(), Duration.Inf)
+    client.close()
 
     // Return first result
     return allConfigs(0)
