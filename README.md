@@ -141,4 +141,19 @@ The HDFS will be available in:
 - `localhost:8020` from host, `myhdfs:8020` from Docker network
 - `http://localhost:20070/` for webUI
 
-### 
+## Scala Project Setup and Run
+
+I use IntelliJ IDE to develop and build this Scala program.
+
+1. Import the project in `AgileDataPipeline` directory from IntelliJ
+2. Setup the sbt in your environement. 
+3. Refresh the sbt (scala build tool) in the project to obtain the dependencies. Dependencies are listed in the `build.sbt` file.
+4. Build and compile the project.
+5. Use `sbt assembly` to generate runnable `AgilePipeline.jar`
+6. Copy the JAR to the Spark container
+7. Bash into the Spark container, either using `ssh` or `docker exec` 
+Execute the JAR using the following command
+```
+cd /data/spark
+/usr/local/spark/bin/spark-submit --class uk.ac.man.cs.agiledata.AgilePipelineTest AgilePipeline.jar [Workflow ID]
+``` 
