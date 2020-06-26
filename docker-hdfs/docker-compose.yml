@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+    myhdfs:
+        #image: mdouchement/hdfs
+        build: .  # instead of image:
+        hostname: myhdfs
+        ports: 
+            - "22022:22"
+            - "28020:8020"
+            - "20010:50010"
+            - "20020:50020"
+            - "20070:50070"
+            - "20075:50075"
+        networks:
+            - docker-kafka_kfk-net
+networks:
+    docker-kafka_kfk-net:
+        external: true
