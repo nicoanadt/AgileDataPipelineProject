@@ -1,9 +1,9 @@
 package uk.ac.man.cs.agiledata
 
 import org.apache.spark.sql
-import org.apache.spark.sql.Column
+import org.apache.spark.sql.{Column, SparkSession}
 import org.apache.spark.sql.functions._
-import uk.ac.man.cs.agiledata.cfg.ConfigOpsAgg
+import uk.ac.man.cs.agiledata.cfg.{ConfigOpsAgg, ConfigOpsMap}
 
 
 /**
@@ -124,6 +124,20 @@ class AgilePipelineOps {
 
     return dfResult
 
+  }
+
+  def Join(dfInput : sql.DataFrame, mapConfig: ConfigOpsMap, spark: SparkSession): sql.DataFrame = {
+
+    val join_type = mapConfig.getOpsMapParams()("join_type")
+    val join_to_csv_dataset  = mapConfig.getOpsMapParams()("join_to_csv_dataset")
+    val join_expr  = mapConfig.getOpsMapParams()("join_expr")
+
+    // Load lookup dataset
+    val lookupDataset = spark.read.format("csv").option("header", "true").load(join_to_csv_dataset)
+
+    //Perform join
+    val dfTemp1 = dfInput.join(lookupDataset, expr(join_expr), join_type)
+    return dfTemp1
   }
 
 }

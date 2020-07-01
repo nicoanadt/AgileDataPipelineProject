@@ -29,6 +29,13 @@ class WFConfigOps(configFromDB : WFConfig) {
           ("aggCols" -> x.params_agg.aggCols.toArray)
         )
        )
+      case "Join" => new ConfigOpsMap("Join",
+        Map(
+          ("join_type" -> x.params_join.join_type),
+          ("join_to_csv_dataset" -> x.params_join.join_to_csv_dataset),
+          ("join_expr" -> x.params_join.join_expr)
+        )
+      )
     }
 
     if(thisOps != None)

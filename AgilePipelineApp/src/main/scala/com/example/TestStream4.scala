@@ -121,6 +121,10 @@ object TestStream4 {
 //      .avg("speed")
        .agg(avg("speed").as("avg_spd"))
 
+    ///6 JOIN
+    // val lkp = spark.read.format("csv").option("header", "true").load("file:///data/spark/data/sensorlookup.csv")
+    // val b = a.join(lkp, $"site_id" === $"siteident", "left_outer")
+
     // CONVERT BACK TO JSON STRING
     val dfI = dfH.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
 

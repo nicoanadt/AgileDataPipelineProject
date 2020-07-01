@@ -99,6 +99,9 @@ object AgilePipelineTest {
         case opsRow: ConfigOpsAgg if opsRow.getOpsName() == "Agg" =>
           opsEngine.Aggregate(opsResult,opsRow)
 
+        case opsRow: ConfigOpsMap if opsRow.getOpsName() == "Join" =>
+          opsEngine.Join(opsResult, opsRow, spark)
+
       }
     }
 

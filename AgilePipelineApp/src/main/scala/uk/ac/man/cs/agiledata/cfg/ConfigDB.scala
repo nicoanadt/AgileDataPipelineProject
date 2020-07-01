@@ -35,7 +35,8 @@ case class Ops(
                 params_rename: List[opsParamRename],
                 params_drop: List[String],
                 params_add: List[opsParamAdd],
-                params_agg: opsParamAgg
+                params_agg: opsParamAgg,
+                params_join: opsParamJoin
               )
 
 case class opsParam(
@@ -70,6 +71,12 @@ case class opsParamAgg(
                         WindowDuration: String,
                         groupByCols: List[String],
                         aggCols: List[String]
+                      )
+
+case class opsParamJoin(
+                         join_type: String,
+                         join_to_csv_dataset: String,
+                         join_expr: String
                       )
 
 case class Target(
@@ -109,7 +116,8 @@ class ConfigDB {
       createCodecProviderIgnoreNone(classOf[opsParamRename]),
       createCodecProviderIgnoreNone(classOf[opsParamAdd]),
       createCodecProviderIgnoreNone(classOf[opsParamAgg]),
-      createCodecProviderIgnoreNone(classOf[Execution])
+      createCodecProviderIgnoreNone(classOf[Execution]),
+      createCodecProviderIgnoreNone(classOf[opsParamJoin])
     )
 
     // Create codec registry based on custom codecs, merge with default registry
