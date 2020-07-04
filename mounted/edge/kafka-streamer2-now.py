@@ -39,7 +39,7 @@ with open("/data/edge/offset_now.txt","w") as offset_file:
 
     # THE LOOP TO INITIATE SCHEDULER
     while True:
-        print("Start new loop -------------")   
+        print("Pushing data to", topic_name)   
 
         
         for row in df.iloc[loop_stream_offset_start:loop_stream_offset_end].to_dict(orient='records'):
