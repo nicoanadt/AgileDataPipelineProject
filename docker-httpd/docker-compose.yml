@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+    fileserver:
+        image: httpd:2.4
+        #build: .  # instead of image:
+        hostname: fileserver
+        ports: 
+            - "38080:80"
+        networks:
+            - docker-kafka_kfk-net
+        volumes:
+            - c:/Data/AgileDataPipelineProject/mounted/spark/data:/usr/local/apache2/htdocs/data
+   
+networks:
+    docker-kafka_kfk-net:
+        external: true
