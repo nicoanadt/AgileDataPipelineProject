@@ -1,0 +1,1 @@
+docker-compose run --rm python_edge python /data/edge/kafka-streamer3.py cfg_rawpvr.yml

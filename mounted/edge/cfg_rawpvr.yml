@@ -1,0 +1,6 @@
+FILENAME: '/data/spark/data/rawpvr_2019-05-01_31d_ATC_1157.csv'
+DICT_FILENAME: '/data/edge/rawpvr_dict.json'
+TOPIC: 'SourceUC1'
+BOOTSTRAP_SERVER: 'kafka:9090'
+OFFSET_FILENAME_PREF: '/data/edge/offset/offset'
+OFFSET_FILENAME_SUFF: '.txt'

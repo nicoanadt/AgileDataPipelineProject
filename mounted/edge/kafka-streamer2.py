@@ -17,7 +17,7 @@ else:
     print("No arguments supplied")
     exit()
     
-offset_file_name = "/data/edge/offset" + topic_name + ".txt"
+offset_file_name = "/data/edge/offset/offset" + topic_name + ".txt"
 
 # OPEN FILE
 df = pd.read_csv (r'/data/spark/data/rawpvr_2019-05-01_31d_ATC_1157.csv')
