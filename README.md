@@ -15,12 +15,11 @@ And several supporting technology to support the overall architecture:
 
 **More documentation is available in [gitbook](https://nico-anandito.gitbook.io/agile-data-pipeline-project/)**
 
-*Disclaimer: This is an ongoing project for our personal use with dynamic changes and moving target.* 
 
 ## Environment setup
 
 Environment setup for this project is deployed in Docker. 
-The images are either available online or can be build from `Dockerfile` and `docker-compose` command.
+The images are either available online (in Docker Hub) or can be build from `Dockerfile` and `docker-compose` command.
  
 
 ### Apache Kafka
@@ -63,7 +62,7 @@ docker-compose up -d
 
 A docker container will start in the background. The Spark UI will be available in `localhost:8080`
 
-NOTE: To integrate with HDFS, start HDFS Docker first before starting Spark.
+*NOTE: To integrate with HDFS, start HDFS Docker first before starting Spark.*
 ### Apache Druid
 
 To run the spark environment, start the docker container with the following command
@@ -72,6 +71,7 @@ To run the spark environment, start the docker container with the following comm
 cd docker-druid
 docker-compose up -d
 ```
+*NOTE: This docker will start several containers which will require significant memory consumption in Docker. It it fails, increase memory allocation in your Docker settings.*
 
 Docker containers will start in the background. The Druid UI will be available in `localhost:9888`
 
@@ -143,7 +143,7 @@ The HDFS will be available in:
 
 ## Scala Project Setup and Run
 
-I use IntelliJ IDE to develop and build this Scala program.
+I use IntelliJ IDE to develop and build this Scala program:
 
 1. Import the project in `AgileDataPipeline` directory from IntelliJ
 2. Setup the sbt in your environment. 

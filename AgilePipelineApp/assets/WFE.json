@@ -192,7 +192,7 @@
 	  {
         "ops_type": "Drop",
         "params_drop": [
-          "site_ident"
+          "siteident"
         ],
         "params_rename": null,
         "params_filter": null,

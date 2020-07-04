@@ -15,3 +15,4 @@ networks:
         
 # run using: docker-compose run --rm python_edge python /bin/bash
 # or: docker-compose run --rm python_edge python /data/edge/kafka-streamer2.py
+# or: docker-compose run --rm python_edge python /data/edge/kafka-streamer2-now.py

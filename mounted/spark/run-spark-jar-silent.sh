@@ -1,1 +1,1 @@
-/usr/local/spark/bin/spark-submit --driver-java-options "-Dlog4j.configuration=file:/data/spark/log-4j.warn.properties" --conf "spark.executor.extraJavaOptions=-Dlog4j.configuration=file:/data/spark/log-4j.warn.properties" --class $1 $2
+/usr/local/spark/bin/spark-submit --driver-java-options "-Dlog4j.configuration=file:/data/spark/log-4j.warn.properties" --conf "spark.executor.extraJavaOptions=-Dlog4j.configuration=file:/data/spark/log-4j.warn.properties" --class $1 $2 $3

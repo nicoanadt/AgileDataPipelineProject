@@ -1,0 +1,19 @@
+{
+"Sdate": "date",
+"Cosit": "cosit",
+"LaneNumber": "lane_number",
+"LaneDescription": "lane_description",
+"LaneDirection": "lane_direction",
+"DirectionDescription": "direction_description",
+"Volume": "volume",
+"Flags": "flags",
+"Flag Text": "flag_text",
+"AvgSpeed": "avg_speed",
+"PmlHGV": "pmlhgv",
+"Class1Volume": "class1vol",
+"Class2Volume": "class2vol",
+"Class3Volume": "class3vol",
+"Class4Volume": "class4vol",
+"Class5Volume": "class5vol",
+"Class6Volume": "class6vol"
+}

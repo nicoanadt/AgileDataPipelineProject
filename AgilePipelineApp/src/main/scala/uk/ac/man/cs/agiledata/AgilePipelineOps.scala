@@ -126,6 +126,13 @@ class AgilePipelineOps {
 
   }
 
+  /**
+   *
+   * @param dfInput
+   * @param mapConfig
+   * @param spark
+   * @return
+   */
   def Join(dfInput : sql.DataFrame, mapConfig: ConfigOpsMap, spark: SparkSession): sql.DataFrame = {
 
     val join_type = mapConfig.getOpsMapParams()("join_type")
@@ -133,6 +140,10 @@ class AgilePipelineOps {
     val join_expr  = mapConfig.getOpsMapParams()("join_expr")
 
     // Load lookup dataset
+    // Dataset is in CSV format, with header as column name
+    // Columns from left and right are appended as left+right.
+    // Thus it is recommended to rename the identical column name as different name before joining,
+    // otherwise it will be problematic to drop/select duplicated column names
     val lookupDataset = spark.read.format("csv").option("header", "true").load(join_to_csv_dataset)
 
     //Perform join
