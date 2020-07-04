@@ -1,7 +1,7 @@
 {
-  "id": "WFUC2",
+  "id": "WFUC2_4073",
   "config": {
-    "name": "Use Case 2",
+    "name": "Use Case 2 for 4073 files",
     "desc": "Traffic Count",
     "created_by": "Nico Anandito",
     "date_created": "2020-06-23 00:00:00",
@@ -11,7 +11,7 @@
     "source": {
       "source_type": "kafka",
       "broker": "kafka:9090",
-      "topic": "SourceUC2",
+      "topic": "SourceUC2_4073",
       "startingOffsets": "earliest",
       "schema": [
         {
@@ -57,30 +57,6 @@
         {
           "name": "pmlhgv",
           "datatype": "int"
-        },
-        {
-          "name": "class1vol",
-          "datatype": "int"
-        },
-        {
-          "name": "class2vol",
-          "datatype": "int"
-        },
-        {
-          "name": "class3vol",
-          "datatype": "int"
-        },
-        {
-          "name": "class4vol",
-          "datatype": "int"
-        },
-        {
-          "name": "class5vol",
-          "datatype": "int"
-        },
-        {
-          "name": "class6vol",
-          "datatype": "int"
         }
       ]
     },
@@ -92,13 +68,7 @@
           "lane_direction",
           "flags",
           "flag_text",
-          "pmlhgv",
-          "class1vol",
-          "class2vol",
-          "class3vol",
-          "class4vol",
-          "class5vol",
-          "class6vol"
+          "pmlhgv"
         ],
         "params_rename": null,
         "params_filter": null,
@@ -115,7 +85,11 @@
           },
 		  {
             "new_name": "cosit",
-            "expr": "regexp_replace(cosit, \"[(^=\\\\\\\"0*)(\\\\\\\"$)]\", '')"
+            "expr": "regexp_replace(cosit, \"[(^=\\\\\\\")(\\\\\\\"$)]\", '')"
+          },
+          {
+            "new_name": "cosit",
+            "expr": "regexp_replace(cosit, \"MAC09000\", '')"
           }
         ],
         "params_rename": null,
@@ -157,6 +131,6 @@
     }
   },
   "execution": {
-    "app_name": "WorkflowUC2"
+    "app_name": "WorkflowUC2_4073"
   }
 }

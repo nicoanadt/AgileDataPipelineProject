@@ -1,0 +1,162 @@
+{
+  "id": "WFUC2_1157",
+  "config": {
+    "name": "Use Case 2 for 1157 files",
+    "desc": "Traffic Count",
+    "created_by": "Nico Anandito",
+    "date_created": "2020-06-23 00:00:00",
+    "date_modified": "2020-06-23 00:00:00"
+  },
+  "workflow": {
+    "source": {
+      "source_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "SourceUC2_1157",
+      "startingOffsets": "earliest",
+      "schema": [
+        {
+          "name": "date",
+          "datatype": "string"
+        },
+        {
+          "name": "cosit",
+          "datatype": "string"
+        },
+        {
+          "name": "lane_number",
+          "datatype": "int"
+        },
+        {
+          "name": "lane_description",
+          "datatype": "string"
+        },
+        {
+          "name": "lane_direction",
+          "datatype": "int"
+        },
+        {
+          "name": "direction_description",
+          "datatype": "string"
+        },
+        {
+          "name": "volume",
+          "datatype": "int"
+        },
+        {
+          "name": "flags",
+          "datatype": "int"
+        },
+        {
+          "name": "flag_text",
+          "datatype": "string"
+        },
+        {
+          "name": "avg_speed",
+          "datatype": "float"
+        },
+        {
+          "name": "pmlhgv",
+          "datatype": "int"
+        },
+        {
+          "name": "class1vol",
+          "datatype": "int"
+        },
+        {
+          "name": "class2vol",
+          "datatype": "int"
+        },
+        {
+          "name": "class3vol",
+          "datatype": "int"
+        },
+        {
+          "name": "class4vol",
+          "datatype": "int"
+        },
+        {
+          "name": "class5vol",
+          "datatype": "int"
+        },
+        {
+          "name": "class6vol",
+          "datatype": "int"
+        }
+      ]
+    },
+    "ops": [
+      {
+        "ops_type": "Drop",
+        "params_drop": [
+          "lane_number",
+          "lane_direction",
+          "flags",
+          "flag_text",
+          "pmlhgv",
+          "class1vol",
+          "class2vol",
+          "class3vol",
+          "class4vol",
+          "class5vol",
+          "class6vol"
+        ],
+        "params_rename": null,
+        "params_filter": null,
+        "params_add": null,
+        "params_agg": null,
+		"params_join": null
+      },
+      {
+        "ops_type": "Add",
+        "params_add": [
+          {
+            "new_name": "date",
+            "expr": "to_timestamp(date)"
+          },
+		  {
+            "new_name": "cosit",
+            "expr": "regexp_replace(cosit, \"[(^=\\\\\\\"0*)(\\\\\\\"$)]\", '')"
+          }
+        ],
+        "params_rename": null,
+        "params_drop": null,
+        "params_filter": null,
+        "params_agg": null,
+		"params_join": null
+      },
+      {
+        "ops_type": "Join",
+        "params_agg": null,
+        "params_rename": null,
+        "params_drop": null,
+        "params_add": null,
+        "params_filter": null,
+        "params_join": {
+          "join_type":"left_outer",
+          "join_to_csv_dataset":"file:///data/spark/data/sensorlookup.csv",
+          "join_expr":"cosit == siteident"
+        }
+      },
+      {
+        "ops_type": "Drop",
+        "params_drop": [
+          "siteident"
+        ],
+        "params_rename": null,
+        "params_filter": null,
+        "params_add": null,
+        "params_agg": null,
+        "params_join": null
+      }
+    ],
+    "target": {
+      "target_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "TargetUC2",
+      "checkpointLocation": "/tmp/apps/checkpoint"
+    }
+  },
+  "execution": {
+    "app_name": "WorkflowUC2"
+  }
+}
