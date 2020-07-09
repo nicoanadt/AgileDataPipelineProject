@@ -90,6 +90,10 @@
           {
             "new_name": "cosit",
             "expr": "regexp_replace(cosit, \"MAC09000\", '')"
+          },
+          {
+            "new_name": "lane_description",
+            "expr":  "CASE WHEN lane_description='Channel 1' THEN 'SB_1' WHEN lane_description='Channel 2' THEN 'SB_2' ELSE 'Others' END"
           }
         ],
         "params_rename": null,
