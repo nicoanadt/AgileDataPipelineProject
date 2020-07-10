@@ -1,1 +1,5 @@
-docker-compose run --rm python_edge python /data/edge/kafka-streamer3.py cfg_rawpvr.yml
+# to run UC1
+docker-compose run --rm python_edge python /data/edge/kafka-streamer3.py cfg/cfg_rawpvr.yml
+
+# to run UC3 in parallel, 4 data source at the same time
+docker-compose run --rm python_edge /data/edge/kafkaFeedUC3.sh

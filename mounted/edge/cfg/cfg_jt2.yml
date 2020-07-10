@@ -1,0 +1,8 @@
+FILENAME: '/data/spark/data/journeytime/r2_trafford/Route_2_TraffordRoad_B_15minIntervals_JT_May2019.csv'
+DICT_FILENAME: '/data/edge/dict_jt.json'
+TOPIC: 'SourceUC3'
+BOOTSTRAP_SERVER: 'kafka:9090'
+OFFSET_FILENAME_PREF: '/data/edge/offset/offsetR2_'
+OFFSET_FILENAME_SUFF: '.txt'
+STREAM_NO_OF_RECS: 1
+STREAM_INTERVAL: 10

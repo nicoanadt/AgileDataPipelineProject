@@ -22,13 +22,15 @@ TOPIC = cfg['TOPIC']
 BOOTSTRAP_SERVER = cfg['BOOTSTRAP_SERVER']
 OFFSET_FILENAME_PREF = cfg['OFFSET_FILENAME_PREF']
 OFFSET_FILENAME_SUFF = cfg['OFFSET_FILENAME_SUFF']
+STREAM_NO_OF_RECS = cfg['STREAM_NO_OF_RECS']
+STREAM_INTERVAL = cfg['STREAM_INTERVAL']
 
 
 # KAFKA SETUP
 producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVER)
 stream_offset_start = 1
-stream_no_of_recs = 1
-stream_interval = 1
+stream_no_of_recs = STREAM_NO_OF_RECS
+stream_interval = STREAM_INTERVAL
 
 
     
