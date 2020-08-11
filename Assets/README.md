@@ -1,8 +1,8 @@
-#Assets of Agile Data Pipeline Framework
+# Assets of Agile Data Pipeline Framework
 This page contains the assets required to support the Framework execution. The details of each content is explained below.
 
 
-##Sample Messages `sample-messages`
+## Sample Messages `sample-messages`
 
 Three type of sample messages are available for each use case.
 
@@ -13,7 +13,7 @@ Aggregated traffic record data, where records are accumulated in 5 minutes perio
 3. `UC3`:
 Precalculated journey time data, where records are accumulated in 15 minutes period.
 
-##Dataset for Lookup `dataset-lookup`
+## Dataset for Lookup `dataset-lookup`
 
 Two types of lookup dataset for 'static join' purpose:
 1. `Sensor Lookup`:
@@ -21,20 +21,20 @@ Used for UC2, contains the sensor location name and its coordinates
 2. `Path Lookup`:
 Used for UC3, contains the coordinate of route path
 
-##Framework
+## Framework
 
-###Start Script `framework-start-script`
+### Start Script `framework-start-script`
 
 The data pipeline framework is executed using this starting script 
 
-###WF Config `framework-wf-config`
+### WF Config `framework-wf-config`
 
 The following configurations are used to run the use case samples
 1. `WFUC1.json`
 2. `WFUC2_1157.json`, `WFUC2_4073.json`, and `WFUC2_MERGED.json`
 3. `WFUC3.json`
 
-##Druid Ingestion `druid-ingest-json`
+## Druid Ingestion `druid-ingest-json`
 
 TBD
 
@@ -42,8 +42,8 @@ TBD
 
 Dashboard configuration for Superset use cases are described here
 
-###Use Case 1
-####UC1 - Today Avg Speed and UC1 Today Traffic Count
+### Use Case 1
+#### UC1 - Today Avg Speed and UC1 Today Traffic Count
 
 ```
 select 
@@ -55,7 +55,7 @@ avg_speed,
 count_vol
 from druid.TargetUC1
 ```
-####UC1 - Historical Avg Speed
+#### UC1 - Historical Avg Speed
 
 ```
 select dt, TIME_FORMAT(dt,'yyyy-MM-dd E') dt_str, a.avg_speed, a.cnt 
@@ -76,7 +76,7 @@ from druid.TargetUC1
 ) b
 on a.dow = time_extract(b.max_dt, 'DOW')
 ```
-####UC1 - Historical Traffic Count
+#### UC1 - Historical Traffic Count
 ```
 select dt, TIME_FORMAT(dt,'yyyy-MM-dd E') dt_str, a.avg_speed, a.cnt 
 from
@@ -97,9 +97,9 @@ from druid.TargetUC1
 on a.dow = time_extract(b.max_dt, 'DOW')
 ```
 
-###Use Case 2
+### Use Case 2
 
-####UC2 - Today Traffic Volume
+#### UC2 - Today Traffic Volume
 
 Type:
 ```
@@ -131,7 +131,7 @@ function updateTooltip(object) {
 }
 ```
 
-####UC 2 - Historical Traffic Volume
+#### UC 2 - Historical Traffic Volume
 
 Type:
 ```
@@ -159,7 +159,7 @@ from druid.TargetUC2 group by locname
 on a.dow = time_extract(b.max_dt, 'DOW') and a.locname=b.locname
 ```
 
-###Use Case 3
+### Use Case 3
 
 #### UC3 - Traffic Map
 

@@ -161,7 +161,7 @@ I use IntelliJ IDE to develop and build this Scala program:
 7. Bash into the Spark container, either using `ssh` or `docker exec` to run the application.
 
 
-##Step by Step Data Pipeline Execution Procedure
+## Step by Step Data Pipeline Execution Procedure
 
 1. Clone this Git project into your environment.
 2. Start the Docker environments
