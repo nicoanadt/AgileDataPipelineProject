@@ -77,7 +77,8 @@ Docker containers will start in the background. The Druid UI will be available i
 
 ### Apache Superset
 
-To run the superset environment, download and adjust the network configuration of the docker
+To run the superset environment, download and adjust the network configuration of the docker.
+We used the `--branch release--0.68` release for our purpose, however you can try to get the latest release to get more features.
 ```
 git clone --branch release--0.68 https://github.com/apache/incubator-superset/
 cd incubator-superset
@@ -116,7 +117,9 @@ Start the docker container with the following command:
 ``` 
 cd docker-edge
 docker-compose run --rm python_edge python /bin/bash
-``` 
+```
+Configuration of python streamer scripts are stored in `/data/edge/cfg`.
+
 
 ### MongoDB database
 This container is used to store workflow configuration metadata. The login credential is inside the `docker-compose` file
@@ -127,6 +130,10 @@ cd docker-mongodb
 docker-compose up -d
 ```
 The database will be available in `localhost:27017` from host, or `mongodb_container:27017` from Docker network
+
+- Create database `AgileDataPipelineFramework` 
+- Create collection `config`
+- Insert documents from `Assets/framework-wf-config` of this Git project
 
 ### HDFS filesystem
 This container is used to store the Kafka checkpoint files. 
@@ -141,7 +148,7 @@ The HDFS will be available in:
 - `localhost:8020` from host, `myhdfs:8020` from Docker network
 - `http://localhost:20070/` for webUI
 
-## Scala Project Setup and Run
+## Scala Project Build
 
 I use IntelliJ IDE to develop and build this Scala program:
 
@@ -149,12 +156,48 @@ I use IntelliJ IDE to develop and build this Scala program:
 2. Setup the sbt in your environment. 
 3. Refresh the sbt (scala build tool) in the project to obtain the dependencies. Dependencies are listed in the `build.sbt` file.
 4. Build and compile the project from IDE.
-5. Use `sbt assembly` to generate runnable `AgilePipeline.jar`
-6. Copy the JAR to the Spark container
-7. Bash into the Spark container, either using `ssh` or `docker exec`. 
+5. Use `sbt assembly` to generate runnable JAR `AgilePipeline.jar`
+6. Copy the JAR to the Spark container, using the mounted filesystem of the docker image
+7. Bash into the Spark container, either using `ssh` or `docker exec` to run the application.
 
-Execute the JAR using the following command
-```
-cd /data/spark
-/usr/local/spark/bin/spark-submit --class uk.ac.man.cs.agiledata.AgilePipelineTest AgilePipeline.jar [Workflow ID]
-``` 
+
+##Step by Step Data Pipeline Execution Procedure
+
+1. Clone this Git project into your environment.
+2. Start the Docker environments
+
+    ```
+    cd AgileDataPipelineProject
+    docker-compose -f docker-kafka/docker-compose.yml up -d
+    docker-compose -f docker-hdfs/docker-compose.yml up -d
+    docker-compose -f docker-spark/docker-compose.yml up -d
+    docker-compose -f docker-mongodb/docker-compose.yml up -d
+    docker-compose -f docker-druid/docker-compose.yml up -d
+    docker-compose -f incubator-superset/docker-compose.yml up -d
+    ```
+
+3. Ensure the MongoDB database already contain the workflow configuration
+4. Start data pipeline framework
+   
+   - SSH or docker exec to the Spark container.\
+       If using ssh from your local computer: `ssh -o UserKnownHostsFile=/dev/null thesis@localhost -p 9122` \
+       Password of the user `thesis` is `BIGDATA2020`
+   - Execute the Agile Data Pipeline Framework
+   ```
+   cd /data/spark
+   ./run-spark-jar-silent.sh uk.ac.man.cs.agiledata.AgilePipelineTest AgilePipeline.jar WFUC3
+   ```
+5. Start pushing data to the Kafka source topic
+
+   ```
+    # to run UC1
+    docker-compose run --rm python_edge python /data/edge/kafka-streamer3.py cfg/cfg_rawpvr.yml
+    
+    # to run UC2 in parallel, 2 data source at the same time
+    docker-compose run --rm python_edge /data/edge/kafkaFeedUC2.sh
+   
+    # to run UC3 in parallel, 4 data source at the same time
+    docker-compose run --rm python_edge /data/edge/kafkaFeedUC3.sh
+    ```
+   
+6. Monitor the Kafka topics and the output for results
