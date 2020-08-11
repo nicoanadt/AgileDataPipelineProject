@@ -11,7 +11,7 @@
     "source": {
       "source_type": "kafka",
       "broker": "kafka:9090",
-      "topic": "SourceUC3",
+      "topic": "SourceUC3*",
       "startingOffsets": "earliest",
       "schema": [
         {

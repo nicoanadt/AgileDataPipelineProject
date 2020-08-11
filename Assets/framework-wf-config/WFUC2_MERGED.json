@@ -1,0 +1,79 @@
+{
+  "id": "WFUC2_MERGED",
+  "config": {
+    "name": "Use Case 2 for merged files",
+    "desc": "Traffic Count",
+    "created_by": "Nico Anandito",
+    "date_created": "2020-06-23 00:00:00",
+    "date_modified": "2020-06-23 00:00:00"
+  },
+  "workflow": {
+    "source": {
+      "source_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "TempUC2",
+      "startingOffsets": "earliest",
+      "schema": [
+        {
+          "name": "date",
+          "datatype": "string"
+        },
+        {
+          "name": "cosit",
+          "datatype": "string"
+        },
+        {
+          "name": "lane_description",
+          "datatype": "string"
+        },
+        {
+          "name": "direction_description",
+          "datatype": "string"
+        },
+        {
+          "name": "volume",
+          "datatype": "int"
+        },
+        {
+          "name": "avg_speed",
+          "datatype": "float"
+        }
+      ]
+    },
+    "ops": [
+      {
+        "ops_type": "Join",
+        "params_agg": null,
+        "params_rename": null,
+        "params_drop": null,
+        "params_add": null,
+        "params_filter": null,
+        "params_join": {
+          "join_type":"left_outer",
+          "join_to_csv_dataset":"file:///data/spark/data/sensorlookup.csv",
+          "join_expr":"cosit == siteident"
+        }
+      },
+      {
+        "ops_type": "Drop",
+        "params_drop": [
+          "siteident"
+        ],
+        "params_rename": null,
+        "params_filter": null,
+        "params_add": null,
+        "params_agg": null,
+        "params_join": null
+      }
+    ],
+    "target": {
+      "target_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "TargetUC2",
+      "checkpointLocation": "/tmp/apps/checkpoint"
+    }
+  },
+  "execution": {
+    "app_name": "WorkflowUC2_MERGED"
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "id": "WFUC1",
+  "config": {
+    "name": "Use Case 1",
+    "desc": "Raw data cleansing and standardization",
+    "created_by": "Nico Anandito",
+    "date_created": "2020-06-23 00:00:00",
+    "date_modified": "2020-06-23 00:00:00"
+  },
+  "workflow": {
+    "source": {
+      "source_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "SourceUC1",
+      "startingOffsets": "earliest",
+      "schema": [
+        {
+          "name": "site_id",
+          "datatype": "string"
+        },
+        {
+          "name": "date",
+          "datatype": "string"
+        },
+        {
+          "name": "lane",
+          "datatype": "int"
+        },
+        {
+          "name": "lane_name",
+          "datatype": "string"
+        },
+        {
+          "name": "direction",
+          "datatype": "int"
+        },
+        {
+          "name": "direction_name",
+          "datatype": "string"
+        },
+        {
+          "name": "reverse",
+          "datatype": "int"
+        },
+        {
+          "name": "class_scheme",
+          "datatype": "int"
+        },
+        {
+          "name": "class",
+          "datatype": "int"
+        },
+        {
+          "name": "class_name",
+          "datatype": "string"
+        },
+        {
+          "name": "length",
+          "datatype": "float"
+        },
+        {
+          "name": "headway",
+          "datatype": "float"
+        },
+        {
+          "name": "gap",
+          "datatype": "float"
+        },
+        {
+          "name": "speed",
+          "datatype": "float"
+        },
+        {
+          "name": "weight",
+          "datatype": "float"
+        },
+        {
+          "name": "vehicle_id",
+          "datatype": "string"
+        },
+        {
+          "name": "flags",
+          "datatype": "int"
+        },
+        {
+          "name": "flag_text",
+          "datatype": "string"
+        },
+        {
+          "name": "num_axles",
+          "datatype": "int"
+        },
+        {
+          "name": "axle_weights",
+          "datatype": "string"
+        },
+        {
+          "name": "axle_spacings",
+          "datatype": "string"
+        }
+      ]
+    },
+    "ops": [
+      {
+        "ops_type": "Drop",
+        "params_drop": [
+          "lane",
+          "lane_name",
+          "direction",
+          "reverse",
+          "class_scheme",
+          "class",
+          "length",
+          "headway",
+          "gap",
+          "weight",
+          "vehicle_id",
+          "flags",
+          "flag_text",
+          "num_axles",
+          "axle_weights",
+          "axle_spacings"
+        ],
+        "params_rename": null,
+        "params_filter": null,
+        "params_add": null,
+        "params_agg": null,
+		"params_join": null
+      },
+      {
+        "ops_type": "Filter",
+        "params_filter": [
+          {
+            "expr": "class_name != 'Class 0'"
+          }
+        ],
+        "params_rename": null,
+        "params_drop": null,
+        "params_add": null,
+        "params_agg": null,
+        "params_join": null
+      },
+      {
+        "ops_type": "Add",
+        "params_add": [
+          {
+            "new_name": "class_name",
+            "expr": "CASE when class_name='Artic' then 'Articulated' when class_name='Bus' then 'Heavy Rigid' when class_name='Car' then 'Car' when class_name='Car+T' then 'Car' when class_name='Mcl' then 'Motorcycle' when class_name='Rigid' then 'Heavy Rigid' else 'Others' END"
+          },
+          {
+            "new_name": "date",
+            "expr": "to_timestamp(date)"
+          },
+		  {
+            "new_name": "site_id",
+            "expr": "regexp_replace(site_id, \"(^\\'0*)\",'')"
+          }
+        ],
+        "params_rename": null,
+        "params_drop": null,
+        "params_filter": null,
+        "params_agg": null,
+		"params_join": null
+      },
+      {
+        "ops_type": "Agg",
+        "params_agg": {
+          "WatermarkColumn": "date",
+          "WatermarkDelayThreshold": "1 second",
+          "WindowTimeColumn": "date",
+          "WindowDuration": "1 minute",
+          "groupByCols": [
+            "site_id",
+            "direction_name",
+            "class_name"
+          ],
+          "aggCols": [
+            "avg(speed) as avg_speed",
+            "count(class_name) as count_vol"
+          ]
+        },
+        "params_rename": null,
+        "params_drop": null,
+        "params_add": null,
+        "params_filter": null,
+        "params_join": null
+      }
+    ],
+    "target": {
+      "target_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "TargetUC1",
+      "checkpointLocation": "/tmp/apps/checkpoint2"
+    }
+  },
+  "execution": {
+    "app_name": "WorkflowUC1"
+  }
+}

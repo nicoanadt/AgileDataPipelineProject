@@ -1,0 +1,82 @@
+{
+  "id": "WFUC3",
+  "config": {
+    "name": "Use Case 3",
+    "desc": "Journey Time",
+    "created_by": "Nico Anandito",
+    "date_created": "2020-06-23 00:00:00",
+    "date_modified": "2020-06-23 00:00:00"
+  },
+  "workflow": {
+    "source": {
+      "source_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "SourceUC3*",
+      "startingOffsets": "earliest",
+      "schema": [
+        {
+          "name": "time",
+          "datatype": "string"
+        },
+        {
+          "name": "date",
+          "datatype": "string"
+        },
+        {
+          "name": "jt",
+          "datatype": "string"
+        },
+        {
+          "name": "route",
+          "datatype": "string"
+        }
+      ]
+    },
+    "ops": [
+      {
+        "ops_type": "Add",
+        "params_add": [
+          {
+            "new_name": "datetime",
+            "expr": "to_timestamp(concat(date,' ', time))"
+          },
+		  {
+            "new_name": "tmp_jt_timestamp",
+            "expr": "to_timestamp(concat('2000-01-01',' ', jt))"
+          },
+          {
+            "new_name": "jt_secs",
+            "expr": "CAST(3600*hour(tmp_jt_timestamp) + 60*minute(tmp_jt_timestamp) + second(tmp_jt_timestamp) as integer)"
+          }
+        ],
+        "params_rename": null,
+        "params_drop": null,
+        "params_filter": null,
+        "params_agg": null,
+		"params_join": null
+      },
+      {
+        "ops_type": "Drop",
+        "params_drop": [
+          "date",
+          "time",
+          "tmp_jt_timestamp"
+        ],
+        "params_rename": null,
+        "params_filter": null,
+        "params_add": null,
+        "params_agg": null,
+        "params_join": null
+      }
+    ],
+    "target": {
+      "target_type": "kafka",
+      "broker": "kafka:9090",
+      "topic": "TargetUC3",
+      "checkpointLocation": "/tmp/apps/checkpoint"
+    }
+  },
+  "execution": {
+    "app_name": "WorkflowUC3"
+  }
+}

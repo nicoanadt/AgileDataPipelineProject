@@ -1,7 +1,7 @@
 {
   "id": "WFUC2_4073",
   "config": {
-    "name": "Use Case 2 for 4073 files",
+    "name": "Use Case 2 for node 4073 files",
     "desc": "Traffic Count",
     "created_by": "Nico Anandito",
     "date_created": "2020-06-23 00:00:00",
@@ -101,36 +101,12 @@
         "params_filter": null,
         "params_agg": null,
 		"params_join": null
-      },
-      {
-        "ops_type": "Join",
-        "params_agg": null,
-        "params_rename": null,
-        "params_drop": null,
-        "params_add": null,
-        "params_filter": null,
-        "params_join": {
-          "join_type":"left_outer",
-          "join_to_csv_dataset":"file:///data/spark/data/sensorlookup.csv",
-          "join_expr":"cosit == siteident"
-        }
-      },
-      {
-        "ops_type": "Drop",
-        "params_drop": [
-          "siteident"
-        ],
-        "params_rename": null,
-        "params_filter": null,
-        "params_add": null,
-        "params_agg": null,
-        "params_join": null
       }
     ],
     "target": {
       "target_type": "kafka",
       "broker": "kafka:9090",
-      "topic": "TargetUC2",
+      "topic": "TempUC2",
       "checkpointLocation": "/tmp/apps/checkpoint"
     }
   },
