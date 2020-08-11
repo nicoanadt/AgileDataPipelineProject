@@ -38,7 +38,7 @@ The following configurations are used to run the use case samples
 
 TBD
 
-##Superset Dashboard `superset-dashboard`
+## Superset Dashboard `superset-dashboard`
 
 Dashboard configuration for Superset use cases are described here
 
