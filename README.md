@@ -2,13 +2,16 @@
 
 A data pipeline in organizations is used to transform, store, and disseminate data from its data source to a data presentation layer. This project is part of my thesis to build an agile data pipeline for a dashboard. The data pipeline involved is real-time, scalable, and agile. The agile characteristic is supposed to provide flexibility and rapid development capability.
 
-The data pipeline is composed of the following technology stack:
+The objective is to minimize the effort required by data engineers to construct a streaming data pipeline. Instead of programming directly, a data pipeline can be constructed by simply deploying a custom configuration. 
+
+
+The end-to-end architecture is composed of the following technology stack:
 - Apache Kafka
 - Apache Spark
 - Apache Druid
 - Apache Superset
 
-And several supporting technology to support the overall architecture:
+And several supporting technology:
 - MongoDB Database
 - Hadoop Filesystem (HDFS)
 - Python scripting environment
@@ -157,7 +160,7 @@ I use IntelliJ IDE to develop and build this Scala program:
 3. Refresh the sbt (scala build tool) in the project to obtain the dependencies. Dependencies are listed in the `build.sbt` file.
 4. Build and compile the project from IDE.
 5. Use `sbt assembly` to generate runnable JAR `AgilePipeline.jar`
-6. Copy the JAR to the Spark container, using the mounted filesystem of the docker image
+6. Copy the JAR to the Spark container, using the mounted filesystem of the docker image. Mounted docker filesystem can be configured in the `docker-compose.yml` of the Spark container. The default mount point is `/data/spark`.
 7. Bash into the Spark container, either using `ssh` or `docker exec` to run the application.
 
 
@@ -179,7 +182,7 @@ I use IntelliJ IDE to develop and build this Scala program:
 3. Ensure the MongoDB database already contain the workflow configuration
 4. Start data pipeline framework
    
-   - SSH or docker exec to the Spark container.\
+   - SSH or `docker exec` to the Spark container.\
        If using ssh from your local computer: `ssh -o UserKnownHostsFile=/dev/null thesis@localhost -p 9122` \
        Password of the user `thesis` is `BIGDATA2020`
    - Execute the Agile Data Pipeline Framework
