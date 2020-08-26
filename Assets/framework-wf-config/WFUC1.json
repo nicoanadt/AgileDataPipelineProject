@@ -102,6 +102,7 @@
     },
     "ops": [
       {
+		"ops_order": "1",
         "ops_type": "Drop",
         "params_drop": [
           "lane",
@@ -128,6 +129,7 @@
 		"params_join": null
       },
       {
+		"ops_order": "2",
         "ops_type": "Filter",
         "params_filter": [
           {
@@ -141,6 +143,7 @@
         "params_join": null
       },
       {
+		"ops_order": "3",
         "ops_type": "Add",
         "params_add": [
           {
@@ -163,6 +166,7 @@
 		"params_join": null
       },
       {
+		"ops_order": "4",
         "ops_type": "Agg",
         "params_agg": {
           "WatermarkColumn": "date",

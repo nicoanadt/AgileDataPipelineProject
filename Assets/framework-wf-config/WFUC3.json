@@ -34,6 +34,7 @@
     },
     "ops": [
       {
+		"ops_order": "1",
         "ops_type": "Add",
         "params_add": [
           {
@@ -56,6 +57,7 @@
 		"params_join": null
       },
       {
+		"ops_order": "2",
         "ops_type": "Drop",
         "params_drop": [
           "date",
