@@ -16,7 +16,7 @@ And several supporting technology:
 - Hadoop Filesystem (HDFS)
 - Python scripting environment
 
-More information is available in the [Assets](assets/README.md) page
+More information is available in the [Assets](https://gitlab.cs.man.ac.uk/u64588na/adaline/tree/master/Assets) page
 
 <!---
 **More documentation is available in [gitbook](https://nico-anandito.gitbook.io/agile-data-pipeline-project/)**
