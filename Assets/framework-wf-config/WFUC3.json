@@ -11,7 +11,7 @@
     "source": {
       "source_type": "kafka",
       "broker": "kafka:9090",
-      "topic": "SourceUC3*",
+      "topic": "SourceUC3_R1,SourceUC3_R2,SourceUC3_R3,SourceUC3_R4",
       "startingOffsets": "earliest",
       "schema": [
         {
@@ -34,7 +34,7 @@
     },
     "ops": [
       {
-		"ops_order": "1",
+        "ops_order": "1",
         "ops_type": "Add",
         "params_add": [
           {
@@ -56,13 +56,28 @@
         "params_agg": null,
 		"params_join": null
       },
+	  {
+        "ops_order": "2",
+        "ops_type": "Join",
+        "params_agg": null,
+        "params_rename": null,
+        "params_drop": null,
+        "params_add": null,
+        "params_filter": null,
+        "params_join": {
+          "join_type": "left_outer",
+          "join_to_csv_dataset": "file:///data/spark/data/pathlookup.csv",
+          "join_expr": "route == routename"
+        }
+      },
       {
-		"ops_order": "2",
+        "ops_order": "3",
         "ops_type": "Drop",
         "params_drop": [
           "date",
           "time",
-          "tmp_jt_timestamp"
+          "tmp_jt_timestamp",
+		  "routename"
         ],
         "params_rename": null,
         "params_filter": null,

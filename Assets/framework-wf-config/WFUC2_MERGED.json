@@ -42,7 +42,7 @@
     },
     "ops": [
       {
-		"ops_order": "1",
+        "ops_order": "1",
         "ops_type": "Join",
         "params_agg": null,
         "params_rename": null,
@@ -50,13 +50,13 @@
         "params_add": null,
         "params_filter": null,
         "params_join": {
-          "join_type":"left_outer",
-          "join_to_csv_dataset":"file:///data/spark/data/sensorlookup.csv",
-          "join_expr":"cosit == siteident"
+          "join_type": "left_outer",
+          "join_to_csv_dataset": "file:///data/spark/data/sensorlookup.csv",
+          "join_expr": "cosit == siteident"
         }
       },
       {
-		"ops_order": "2",
+        "ops_order": "2",
         "ops_type": "Drop",
         "params_drop": [
           "siteident"
