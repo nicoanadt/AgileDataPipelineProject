@@ -191,7 +191,7 @@ I use IntelliJ IDE to develop and build this Scala program:
    - Execute the Agile Data Pipeline Framework
    ```
    cd /data/spark
-   ./run-spark-jar-silent.sh uk.ac.man.cs.agiledata.AgilePipelineTest AgilePipeline.jar WFUC3
+   ./run-spark-jar-silent.sh uk.ac.man.cs.agiledata.AdalineRunApp AgilePipeline.jar WFUC3
    ```
 5. Start pushing data to the Kafka source topic
 

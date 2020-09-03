@@ -1,0 +1,1 @@
+./run-spark-jar-silent.sh uk.ac.man.cs.agiledata.AdalineRunApp AgilePipeline.jar WFUC3
