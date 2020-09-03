@@ -6,7 +6,18 @@ import org.apache.spark.sql.Column
  * Base class
  * @param name
  */
-class ConfigOps(name: String) {
+class ConfigOps(order: String, name: String) {
+  def getOpsOrder(): Int = {
+    def toInt(s: String): Int = {
+      try {
+        s.toInt
+      } catch {
+        case e: Exception => 0
+      }
+    }
+
+    return toInt(order)
+  }
   def getOpsName(): String = {
     return name
   }
@@ -17,7 +28,7 @@ class ConfigOps(name: String) {
  * @param name
  * @param paramArr
  */
-class ConfigOpsArr(name: String, paramArr: Array[String]) extends ConfigOps(name) {
+class ConfigOpsArr(order: String, name: String, paramArr: Array[String]) extends ConfigOps(order, name) {
   def getOpsArrParams(): Array[String] = {
     return paramArr
   }
@@ -28,7 +39,7 @@ class ConfigOpsArr(name: String, paramArr: Array[String]) extends ConfigOps(name
  * @param name
  * @param paramTupleArr
  */
-class ConfigOpsColTuples(name: String, paramTupleArr: Array[(String,Column)]) extends ConfigOps(name) {
+class ConfigOpsColTuples(order: String, name: String, paramTupleArr: Array[(String,Column)]) extends ConfigOps(order, name) {
   def getOpsTuplesParams(): Array[(String,Column)] = {
     return paramTupleArr
   }
@@ -39,13 +50,13 @@ class ConfigOpsColTuples(name: String, paramTupleArr: Array[(String,Column)]) ex
  * @param name
  * @param paramTupleArr
  */
-class ConfigOpsStrTuples(name: String, paramTupleArr: Array[(String,String)]) extends ConfigOps(name) {
+class ConfigOpsStrTuples(order: String, name: String, paramTupleArr: Array[(String,String)]) extends ConfigOps(order, name) {
   def getOpsTuplesParams(): Array[(String,String)] = {
     return paramTupleArr
   }
 }
 
-class ConfigOpsMap(name: String, paramMap: Map[String,String]) extends ConfigOps(name) {
+class ConfigOpsMap(order: String, name: String, paramMap: Map[String,String]) extends ConfigOps(order, name) {
   def getOpsMapParams(): Map[String,String] = {
     return paramMap
   }
@@ -59,7 +70,7 @@ class ConfigOpsMap(name: String, paramMap: Map[String,String]) extends ConfigOps
  * @param paramAddMap
  * @param aggParam
  */
-class ConfigOpsAgg(name: String, paramAddMap: Map[String,String], multiParam: Map[String,Array[String]]) extends ConfigOpsMap(name, paramAddMap) {
+class ConfigOpsAgg(order: String, name: String, paramAddMap: Map[String,String], multiParam: Map[String,Array[String]]) extends ConfigOpsMap(order, name, paramAddMap) {
   def getMultiParam(): Map[String,Array[String]] = {
     return multiParam
   }

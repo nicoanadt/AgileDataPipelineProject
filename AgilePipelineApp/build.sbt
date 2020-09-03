@@ -13,8 +13,9 @@ libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.5" % "provided"
 // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.5" % "provided"
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.9.0"
+libraryDependencies += "com.typesafe" % "config" % "1.4.0"
 
-mainClass in assembly := Some("com.example.TestStream1")
+mainClass in assembly := Some("uk.ac.man.cs.agiledata.AdalineRunApp")
 assemblyJarName in assembly := "AgilePipeline.jar"
 
 // in assembly := {
@@ -39,8 +40,7 @@ assemblyMergeStrategy in assembly := {
   case "META-INF/mailcap" => MergeStrategy.last
   case "META-INF/mimetypes.default" => MergeStrategy.last
   case "plugin.properties" => MergeStrategy.last
-  case "log4j.properties" => MergeStrategy.last
-  case "overview.html" => MergeStrategy.last  // Added this for 2.1.0 I think
+  case "application.conf" => MergeStrategy.last
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
     oldStrategy(x)

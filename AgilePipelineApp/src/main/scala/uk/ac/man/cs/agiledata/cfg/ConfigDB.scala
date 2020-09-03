@@ -30,6 +30,7 @@ case class Source(
                  )
 
 case class Ops(
+                ops_order: String,
                 ops_type: String,
                 params_filter: List[opsParamFilter],
                 params_rename: List[opsParamRename],
@@ -125,10 +126,11 @@ class ConfigDB {
     fromRegistries(customCodecs, DEFAULT_CODEC_REGISTRY)
 
     // Connect to mongodb database
-    val uri: String = "mongodb://datapipeline:bigdata2020@mongodb_container:27017/datapipeline?retryWrites=true&w=majority"
+    //val uri: String = "mongodb://datapipeline:bigdata2020@mongodb_container:27017/datapipeline?retryWrites=true&w=majority"
+    val uri: String = "mongodb://AdalineFramework:bigdata2020@mongodb_container:27017/AdalineFramework?retryWrites=true&w=majority"
     System.setProperty("org.mongodb.async.type", "netty")
     val client: MongoClient = MongoClient(uri)
-    val database: MongoDatabase = client.getDatabase("datapipeline").withCodecRegistry(codecRegistry)
+    val database: MongoDatabase = client.getDatabase("AdalineFramework").withCodecRegistry(codecRegistry)
 
     // Get collection
     val configCollection: MongoCollection[WFConfig] = database.getCollection("config")

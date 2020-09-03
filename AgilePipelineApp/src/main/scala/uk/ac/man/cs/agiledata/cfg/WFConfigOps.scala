@@ -13,11 +13,11 @@ class WFConfigOps(configFromDB : WFConfig) {
   // Assemble pipeline from database configuration
   for(x <- configFromDB.workflow.ops) {
     val thisOps = x.ops_type match {
-      case "Filter" => new ConfigOpsArr("Filter", x.params_filter.map(x => x.expr).toArray )
-      case "Rename" => new ConfigOpsStrTuples("Rename", x.params_rename.map(x => (x.old_name,x.new_name)).toArray)
-      case "Drop" => new ConfigOpsArr("Drop", x.params_drop.toArray)
-      case "Add" => new ConfigOpsStrTuples("Add", x.params_add.map( x => (x.new_name,x.expr)).toArray)
-      case "Agg" => new ConfigOpsAgg("Agg",
+      case "Filter" => new ConfigOpsArr(x.ops_order, "Filter", x.params_filter.map(x => x.expr).toArray )
+      case "Rename" => new ConfigOpsStrTuples(x.ops_order, "Rename", x.params_rename.map(x => (x.old_name,x.new_name)).toArray)
+      case "Drop" => new ConfigOpsArr(x.ops_order, "Drop", x.params_drop.toArray)
+      case "Add" => new ConfigOpsStrTuples(x.ops_order, "Add", x.params_add.map( x => (x.new_name,x.expr)).toArray)
+      case "Agg" => new ConfigOpsAgg(x.ops_order, "Agg",
           Map(
             ("WatermarkColumn" -> x.params_agg.WatermarkColumn),
             ("WatermarkDelayThreshold" -> x.params_agg.WatermarkDelayThreshold),
@@ -29,7 +29,7 @@ class WFConfigOps(configFromDB : WFConfig) {
           ("aggCols" -> x.params_agg.aggCols.toArray)
         )
        )
-      case "Join" => new ConfigOpsMap("Join",
+      case "Join" => new ConfigOpsMap(x.ops_order, "Join",
         Map(
           ("join_type" -> x.params_join.join_type),
           ("join_to_csv_dataset" -> x.params_join.join_to_csv_dataset),
@@ -42,6 +42,7 @@ class WFConfigOps(configFromDB : WFConfig) {
       ops += thisOps
   }
 
+  /**
   // For backup only - deprecated
   var ops_BAK = new ArrayBuffer[ConfigOps]()
   ops_BAK += new ConfigOpsArr("Filter", Array("headway >= 0"))
@@ -73,9 +74,10 @@ class WFConfigOps(configFromDB : WFConfig) {
       ("aggCols" -> Array("avg(speed) as avg_speed"))
     )
   )
-
+ */
 
   def getConfigOps() : Array[ConfigOps] ={
-    return ops.toArray
+    // Return while sorting - by ops_order integer value - ascending
+    return ops.toArray.sortWith(_.getOpsOrder() < _.getOpsOrder())
   }
 }

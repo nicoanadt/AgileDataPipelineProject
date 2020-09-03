@@ -8,8 +8,9 @@ import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructTyp
 import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.sql.Column
 import uk.ac.man.cs.agiledata.cfg._
+import com.typesafe.config.ConfigFactory
 
-object AgilePipelineTest {
+object AdalineRunApp {
 
   def main(args: Array[String]): Unit = {
 
@@ -22,6 +23,10 @@ object AgilePipelineTest {
 
     // GET Configuration from Database
     val configFromDB = new ConfigDB().getConfiguration(workflowID)
+
+    // GET Configuration from Properties
+    val conf  = ConfigFactory.load()
+    val sparkFromConf = conf.getString("spark.master")
 
     val spark = SparkSession
       .builder()
