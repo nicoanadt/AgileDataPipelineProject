@@ -137,9 +137,25 @@ docker-compose up -d
 ```
 The database will be available in `localhost:27017` from host, or `mongodb_container:27017` from Docker network
 
-- Create database `AgileDataPipelineFramework` 
+
+- Create database `AdalineFramework` 
 - Create collection `config`
 - Insert documents from `Assets/framework-wf-config` of this Git project
+- Connect to MongoDB root console, and create a new user
+    ```
+  docker exec -it docker-mongodb_mongodb_container_1 mongo -u root
+  > use AdalineFramework
+  > db.createUser(
+       {
+         user: "AdalineFramework",
+         pwd: "bigdata2020",
+         roles: [ "readWrite", "dbAdmin" ]
+       }
+    )
+    ```
+
+First time MongoDB setup require the following credential configuration setup:
+
 
 ### HDFS filesystem
 This container is used to store the Kafka checkpoint files. 
