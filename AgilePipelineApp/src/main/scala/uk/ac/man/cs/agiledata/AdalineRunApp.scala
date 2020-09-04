@@ -25,6 +25,7 @@ object AdalineRunApp {
 
   /**
    * Main class for the Adaline Framework Spark application
+   * Loads configuration from the application.conf file
    *
    * @param args args[0] is the unique identifier of the workflow config
    */
