@@ -7,16 +7,20 @@ import uk.ac.man.cs.agiledata.cfg.{ConfigOpsAgg, ConfigOpsMap}
 
 
 /**
- * Execute the data pipeline based on the parameters given in WFConfig
+ * This class executes the data pipeline based on the parameters given in WFConfigOps function
+ * Essentially, this is the engine of the data pipeline that will establish the streaming pipeline
+ * However, the functions in this class is only the operation, while the actual orchestration is constructed
+ * in AdalineRunApp main class
+ *
  */
 class AgilePipelineOps {
   /**
    * FILTER FUNCTION
    *
    *
-   * @param dfInput
-   * @param conditions
-   * @return
+   * @param dfInput Input dataframe
+   * @param conditions Expression filter string
+   * @return Filtered dataframe
    */
   def Filter(dfInput : sql.DataFrame, conditions: String ): sql.DataFrame = {
     return dfInput.filter(conditions)
@@ -25,9 +29,9 @@ class AgilePipelineOps {
   /**
    * RENAME COLUMN FUNCTION
    *
-   * @param dfInput
-   * @param colNames
-   * @return
+   * @param dfInput Input dataframe
+   * @param paramAddTuples Pair of string that contains old column name and new column name
+   * @return Renamed dataframe
    */
   def Rename(dfInput : sql.DataFrame, paramAddTuples: Array[(String,String)]): sql.DataFrame = {
     var dfTemp1 = dfInput
@@ -41,9 +45,9 @@ class AgilePipelineOps {
    * DROP COLUMN FUNCTION
    *
    *
-   * @param dfInput
-   * @param colNames
-   * @return
+   * @param dfInput Input dataframe
+   * @param colNames Array of column names to be dropped
+   * @return Dropped dataframe
    */
   def Drop(dfInput : sql.DataFrame, colNames: Array[String]): sql.DataFrame = {
     var dfTemp1 = dfInput
@@ -55,12 +59,12 @@ class AgilePipelineOps {
 
   /**
    * ADD COLUMN FUNCTION
+   * Takes multiple column+expression pairings using the array
    *
    *
-   *
-   * @param dfInput
-   * @param paramAddTuples
-   * @return
+   * @param dfInput Input dataframe
+   * @param paramAddTuples Array of new column name (tuple 1) and an expression string (tuple 2)
+   * @return Dataframe with added columns
    */
   def Add(dfInput : sql.DataFrame, paramAddTuples: Array[(String,String)]): sql.DataFrame = {
     var dfTemp1 = dfInput
@@ -82,9 +86,9 @@ class AgilePipelineOps {
    * )
    * .agg(expr("avg(speed) as avg_speed"))
    *
-   * @param dfInput
-   * @param aggConfig
-   * @return
+   * @param dfInput Input dataframe
+   * @param aggConfig The configuration object for aggregation functions
+   * @return Aggregated dataframe
    */
   def Aggregate(dfInput : sql.DataFrame, aggConfig: ConfigOpsAgg): sql.DataFrame = {
 
@@ -127,11 +131,12 @@ class AgilePipelineOps {
   }
 
   /**
+   * JOIN FUNCTION
    *
-   * @param dfInput
-   * @param mapConfig
-   * @param spark
-   * @return
+   * @param dfInput Input dataframe
+   * @param mapConfig Parameter map from a string to string
+   * @param spark Spark session of the application, for joining purpose
+   * @return Joined dataframe
    */
   def Join(dfInput : sql.DataFrame, mapConfig: ConfigOpsMap, spark: SparkSession): sql.DataFrame = {
 

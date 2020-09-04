@@ -3,7 +3,10 @@ package uk.ac.man.cs.agiledata.cfg
 import scala.collection.mutable.ArrayBuffer
 
 /**
+ * This class is responsible to convert workflow configuration from the database to the
+ * WFConfigOps object that can be read by the AdalineRunApp
  *
+ * @param configFromDB WFConfig object obtained from the MongoDB metastore database
  */
 class WFConfigOps(configFromDB : WFConfig) {
 
@@ -76,6 +79,12 @@ class WFConfigOps(configFromDB : WFConfig) {
   )
  */
 
+  /**
+   * Return the workflow operation configurations object
+   * The operations are sorted based on ops_order
+   *
+   * @return Sorted operations in an array
+   */
   def getConfigOps() : Array[ConfigOps] ={
     // Return while sorting - by ops_order integer value - ascending
     return ops.toArray.sortWith(_.getOpsOrder() < _.getOpsOrder())

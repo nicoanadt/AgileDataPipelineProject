@@ -2,11 +2,14 @@ package uk.ac.man.cs.agiledata.cfg
 
 import org.mongodb.scala._
 import org.mongodb.scala.model.Projections._
-
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-// CASE CLASSES FOR MONGODB MACROS
+/**
+ * The following case classes are used for MongoDB Macros
+ * The JSON file is loaded and instantiated to WFConfig object in Scala
+ *
+ */
 
 case class WFConfig(
                      id: String,
@@ -89,13 +92,25 @@ case class Target(
 
 case class Workflow( source: Source, ops: List[Ops], target: Target )
 
-// END OF CASE CLASSES FOR MONGODB MACROS
+/**
+ * END OF CASE CLASSES FOR MONGODB MACROS
+ */
 
 /**
- *
+ * This class is responsible to connect to the MongoDB metastore database
  */
 class ConfigDB {
-  def getConfiguration(workflowName: String): WFConfig ={
+
+  /**
+   * This function connects to a database and return a single configuration based on the supplied wf unique id
+   *
+   * @param workflowName Unique identifier of the workflow config
+   * @param connString Connection string of the MongoDB
+   * @param dbName Database name of MongoDB
+   * @param collName MongoDB collection name
+   * @return One single WFConfig object consists of the workflow configuration
+   */
+  def getConfiguration(workflowName: String, connString: String, dbName: String, collName:String): WFConfig ={
 
     import org.bson.codecs.configuration.CodecRegistries
     import org.bson.codecs.configuration.CodecRegistries._
@@ -127,13 +142,13 @@ class ConfigDB {
 
     // Connect to mongodb database
     //val uri: String = "mongodb://datapipeline:bigdata2020@mongodb_container:27017/datapipeline?retryWrites=true&w=majority"
-    val uri: String = "mongodb://AdalineFramework:bigdata2020@mongodb_container:27017/AdalineFramework?retryWrites=true&w=majority"
+    //val uri: String = "mongodb://AdalineFramework:bigdata2020@mongodb_container:27017/AdalineFramework?retryWrites=true&w=majority"
     System.setProperty("org.mongodb.async.type", "netty")
-    val client: MongoClient = MongoClient(uri)
-    val database: MongoDatabase = client.getDatabase("AdalineFramework").withCodecRegistry(codecRegistry)
+    val client: MongoClient = MongoClient(connString)
+    val database: MongoDatabase = client.getDatabase(dbName).withCodecRegistry(codecRegistry)
 
     // Get collection
-    val configCollection: MongoCollection[WFConfig] = database.getCollection("config")
+    val configCollection: MongoCollection[WFConfig] = database.getCollection(collName)
 
     // Query collection based on config.name, wait for result
     val allConfigs = Await.result(configCollection.find(Document("id" -> workflowName)).toFuture(), Duration.Inf)

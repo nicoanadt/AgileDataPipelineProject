@@ -4,9 +4,17 @@ import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructTyp
 import uk.ac.man.cs.agiledata.cfg.ConfigSchemaTuples
 
 /**
- * Convert config to structype
+ * This class converts workflow configuration from database to a dataset structure
+ * The dataset structure consists of column name and data type
  */
 class AgilePipelineSchema {
+
+  /**
+   * Converts schema from database to usable schema for a dataframe
+   *
+   * @param param Array of string pair: column name and data type
+   * @return
+   */
   def getStruct(param: ConfigSchemaTuples): StructType = {
     var returnStruct: StructType = new StructType()
 

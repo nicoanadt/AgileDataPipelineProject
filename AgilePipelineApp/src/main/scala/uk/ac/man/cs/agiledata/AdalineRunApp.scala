@@ -4,14 +4,30 @@ import org.apache.spark.sql
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructType}
-
 import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.sql.Column
 import uk.ac.man.cs.agiledata.cfg._
 import com.typesafe.config.ConfigFactory
 
+/**
+ * Agile Data Pipeline (Adaline) Framework is a Spark Streaming application
+ * that dynamically load workflow configuration from a metastore database
+ * and establish a streaming data pipeline.
+ *
+ * This application is built to complete the MSc dissertation project at
+ * The University of Manchester, School of Computer Science
+ *
+ * Manchester, September 2020
+ *
+ * @author Nico Anandito
+ */
 object AdalineRunApp {
 
+  /**
+   * Main class for the Adaline Framework Spark application
+   *
+   * @param args args[0] is the unique identifier of the workflow config
+   */
   def main(args: Array[String]): Unit = {
 
     if(args.isEmpty) {
@@ -20,17 +36,19 @@ object AdalineRunApp {
     }
     val workflowID = args(0)
 
-
-    // GET Configuration from Database
-    val configFromDB = new ConfigDB().getConfiguration(workflowID)
-
-    // GET Configuration from Properties
+    // Get configuration from application.conf
     val conf  = ConfigFactory.load()
-    val sparkFromConf = conf.getString("spark.master")
+    val sparkFromConf = conf.getString("adaline.spark.master")
+    val connStringFromConf = conf.getString("mongodb.connection.string")
+    val dbnameFromConf = conf.getString("mongodb.database.name")
+    val collFromConf = conf.getString("mongodb.collection.name")
+
+    // Get configuration from Database
+    val configFromDB = new ConfigDB().getConfiguration(workflowID, connStringFromConf, dbnameFromConf, collFromConf)
 
     val spark = SparkSession
       .builder()
-      .master("spark://sparkmst:7077")
+      .master(sparkFromConf)
       .appName("AgilePipeline")
       //.config("spark.some.config.option", "some-value")
       .getOrCreate()
@@ -38,7 +56,7 @@ object AdalineRunApp {
     // For implicit conversions like converting RDDs to DataFrames
     import spark.implicits._
 
-    // GET CONFIGURATIONS ------------------------------------------------------
+    // BUILD WF CONFIGURATIONS ------------------------------------------------------
     // 1. SCHEMA
     val schemaConfiguration = new WFConfigSchema(configFromDB)
     val schemaEngine = new AgilePipelineSchema()
@@ -77,8 +95,7 @@ object AdalineRunApp {
     // EXPLODE JSON STRUCTURE in VALUE to its own columns
     val dfC = dfB.select("value.*")
 
-    // DO SOME OPERATION HERE
-    // AGILE PIPELINE
+    // DO SOME OPERATION HERE FOR THE AGILE DATA PIPELINE
 
     // Assign opsResult as preparation of loop
     var opsResult: sql.DataFrame = dfC

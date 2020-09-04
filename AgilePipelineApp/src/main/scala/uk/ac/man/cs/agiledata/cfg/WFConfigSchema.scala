@@ -1,11 +1,22 @@
 package uk.ac.man.cs.agiledata.cfg
 
+/**
+ * An object that contains an array of tuples (string and string)
+ * @param paramSchema
+ */
 class ConfigSchemaTuples(paramSchema: Array[(String,String)]) {
   def getConfigSchema(): Array[(String,String)] = {
     return paramSchema
   }
 }
 
+
+/**
+ * This class is responsible to convert workflow configuration from the database to the
+ * WFConfigSchema object that can be read by the AdalineRunApp
+ *
+ * @param configFromDB  WFConfig object obtained from the MongoDB metastore database
+ */
 class WFConfigSchema(configFromDB: WFConfig) {
 
   // Move schema from db macros to our array

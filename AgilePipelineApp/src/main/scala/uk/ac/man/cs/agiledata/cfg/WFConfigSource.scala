@@ -1,11 +1,21 @@
 package uk.ac.man.cs.agiledata.cfg
 
+/**
+ * Simply map a string to another string
+ * @param paramSource
+ */
 class ConfigSourceTargetMap(paramSource: Map[String,String]) {
   def getMap(): Map[String,String] = {
     return paramSource
   }
 }
 
+/**
+ * This class is responsible to convert workflow configuration from the database to the
+ * WFConfigSource object that can be read by the AdalineRunApp
+ *
+ * @param configFromDB  WFConfig object obtained from the MongoDB metastore database
+ */
 class WFConfigSource(configFromDB : WFConfig) {
 
   val sourceWF = new ConfigSourceTargetMap(
@@ -17,6 +27,7 @@ class WFConfigSource(configFromDB : WFConfig) {
     )
   )
 
+  //This config is not used
   val sourceWF_BAK = new ConfigSourceTargetMap(
     Map(
       "type" -> "kafka",
@@ -31,6 +42,12 @@ class WFConfigSource(configFromDB : WFConfig) {
   }
 }
 
+/**
+ * This class is responsible to convert workflow configuration from the database to the
+ * WFConfigTarget object that can be read by the AdalineRunApp
+ *
+ * @param configFromDB  WFConfig object obtained from the MongoDB metastore database
+ */
 class WFConfigTarget(configFromDB : WFConfig) {
 
   val sourceWF = new ConfigSourceTargetMap(
@@ -42,6 +59,7 @@ class WFConfigTarget(configFromDB : WFConfig) {
     )
   )
 
+  //This config is not used
   val sourceWF_BAK = new ConfigSourceTargetMap(
     Map(
       "type" -> "kafka",
