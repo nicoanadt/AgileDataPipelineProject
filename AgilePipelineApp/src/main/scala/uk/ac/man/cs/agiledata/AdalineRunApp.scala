@@ -44,7 +44,7 @@ object AdalineRunApp {
     val dbnameFromConf = conf.getString("mongodb.database.name")
     val collFromConf = conf.getString("mongodb.collection.name")
 
-    // Get configuration from Database
+    // Get configuration from database
     val configFromDB = new ConfigDB().getConfiguration(workflowID, connStringFromConf, dbnameFromConf, collFromConf)
 
     val spark = SparkSession
@@ -86,22 +86,21 @@ object AdalineRunApp {
       .option("startingOffsets", srcConfigMap("startingOffsets"))
       .load()
 
-    // EXTRACT KEY and VALUE only while casting to string
+    // Extract key and value only while casting to string
     val dfA = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").as[(String, String)]
 
 
-    // CONVERT JSON STRING in VALUE to JSON STRUCTURE using SCHEMA
+    // Convert JSON string in VALUE to JSON structure using SCHEMA
     val dfB = dfA.withColumn("value", from_json(col("value"), sourceSchema))
 
-    // EXPLODE JSON STRUCTURE in VALUE to its own columns
+    // Explode JSON structure in VALUE to its own columns
     val dfC = dfB.select("value.*")
-
-    // DO SOME OPERATION HERE FOR THE AGILE DATA PIPELINE
 
     // Assign opsResult as preparation of loop
     var opsResult: sql.DataFrame = dfC
 
     /**
+     * Do some operation here for the Agile Data Pipeline
      * Cycle through operations to create the pipeline based on configuration
      */
     for (opsRow <- opsConfiguration.getConfigOps()) {
@@ -129,10 +128,10 @@ object AdalineRunApp {
     }
 
 
-    // CONVERT BACK TO JSON STRING
+    // Convert back to JSON string
     val dfI = opsResult.selectExpr("CAST(null AS STRING) AS key", "to_json(struct(*)) AS value")
 
-    // START STREAMING to output
+    // Start streaming to output
     val query = dfI
       .writeStream // use `write` for batch, like DataFrame
       .format("kafka")
@@ -141,7 +140,7 @@ object AdalineRunApp {
       .option("checkpointLocation", tgtConfigMap("checkpointLocation"))
       .start()
 
-    // NEED to wait termination signal before exiting the app
+    // Need to wait for termination signal before exiting the app
     query.awaitTermination()
   }
 
